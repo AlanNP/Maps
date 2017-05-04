@@ -5,9 +5,9 @@
     id        = "mx.vallenrecorridos_android"
     versionCode = "102"
     version   = "1.0.1">
-	<name>Rutas de Entregas</name>
-    <description>Rutas de Entregas</description>
-	<author email="soporte@prointernet.mx" href="http://www.vallenproveedora.com.mx">Rutas de Entregas</author>
+	<name>Mapa Simple</name>
+    <description>Mapa Simple</description>
+	<author email="soporte@prointernet.mx" href="http://www.vallenproveedora.com.mx">Mapa Simple</author>
 	<icon src="icons/hdpi.png" gap:platform="android" gap:density="hdpi"/>
 	<icon src="icons/launcher_48x48.png" gap:platform="android" gap:density="launcher_48x48"/>
 	<icon src="icons/launcher_72x72.png" gap:platform="android" gap:density="launcher_72x72"/>
