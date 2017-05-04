@@ -8,6 +8,7 @@ var	currentPositionMarker;
 
 function displayAndWatch(position) {
 	setCurrentPosition(position);
+	watchCurrentPosition();
 }
 
 function setCurrentPosition(pos) {
@@ -46,6 +47,19 @@ function setCurrentPosition(pos) {
 		}
 	});
 }
+function watchCurrentPosition() {
+	var positionTimer = navigator.geolocation.watchPosition(
+		function (position) {
+			setMarkerPosition(currentPositionMarker,position);
+		});
+}
+function setMarkerPosition(marker, position) {
+		marker.setPosition(
+			new google.maps.LatLng(
+				position.coords.latitude,
+				position.coords.longitude)
+		);
+	}
 function initLocationProcedure() {
 	navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
 		//alert('buscar posición')
@@ -57,24 +71,24 @@ function initLocationProcedure() {
 		$("#avisoUbicacion").popup('open');
 		$("#botones").hide();
 	}
-    
-    var LATITUDE_ANTERIOR='0';
+
+	var LATITUDE_ANTERIOR='0';
 	var LONGITUDE_ANTERIOR='0';
 	function GuardarMovimientos(){
 		currentPositionMarker.setIcon(image);
-
 		setInterval(function() {
 			var positionTimer = navigator.geolocation.getCurrentPosition(
 				function (position) {
 					if (LATITUDE_ANTERIOR!=position.coords.latitude && LONGITUDE_ANTERIOR!=position.coords.longitude){
+						
 						currentPositionMarker.setIcon(image_send2);
+						LATITUDE_ANTERIOR=itemB.latitude_ANTERIOR||'',
+						LONGITUDE_ANTERIOR=itemB.longitude_ANTERIOR||'';
 						currentPositionMarker.setIcon(image);
-                        LATITUDE_ANTERIOR=position.coords.latitude;
-						LONGITUDE_ANTERIOR=position.coords.longitude;
+								
 					}else{
 						currentPositionMarker.setIcon(image);
 					}
 				});
 		}, 10000);
-		
 	};
