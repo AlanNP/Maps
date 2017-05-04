@@ -54,12 +54,12 @@ function watchCurrentPosition() {
 		});
 }
 function setMarkerPosition(marker, position) {
-		marker.setPosition(
-			new google.maps.LatLng(
-				position.coords.latitude,
-				position.coords.longitude)
+	marker.setPosition(
+		new google.maps.LatLng(
+			position.coords.latitude,
+			position.coords.longitude)
 		);
-	}
+}
 function initLocationProcedure() {
 	navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
 		//alert('buscar posición')
@@ -76,19 +76,61 @@ function initLocationProcedure() {
 	var LONGITUDE_ANTERIOR='0';
 	function GuardarMovimientos(){
 		currentPositionMarker.setIcon(image);
-		setInterval(function() {
+		if (sessionStorage.getItem('ESTATUS_PARADA')=='En Ruta'){
+			setInterval(function() {
+				var positionTimer = navigator.geolocation.getCurrentPosition(
+					function (position) {
+						if (LATITUDE_ANTERIOR!=position.coords.latitude && LONGITUDE_ANTERIOR!=position.coords.longitude){
+							$.ajax({
+								url:'http://recorridos.vallen.mx/SIS/ReportarUbicacion/index.asp',
+								data:{ID_PARADA:12516,latitude:position.coords.latitude,longitude:position.coords.longitude},
+								type:'get',
+								dataType: 'jsonp',
+								callbackParameter: 'callback',
+								success: function(data){
+									$.each(data.datosB, function(j,itemB){
+										var ESTADO_CONSULTA=itemB.ESTADO_CONSULTA||'',
+										LATITUDE_ANTERIOR=itemB.latitude_ANTERIOR||'',
+										LONGITUDE_ANTERIOR=itemB.longitude_ANTERIOR||'';
+										currentPositionMarker.setIcon(image);
+									})
+								}
+							});
+
+						}else{
+							currentPositionMarker.setIcon(image);
+						}
+					});
+			}, 10000);
+		};
+	};
+	function IniciarRecorrido(){
+
+		if(!!navigator.geolocation) {
 			var positionTimer = navigator.geolocation.getCurrentPosition(
 				function (position) {
-					if (LATITUDE_ANTERIOR!=position.coords.latitude && LONGITUDE_ANTERIOR!=position.coords.longitude){
-						
-						currentPositionMarker.setIcon(image_send2);
-						LATITUDE_ANTERIOR=itemB.latitude_ANTERIOR||'',
-						LONGITUDE_ANTERIOR=itemB.longitude_ANTERIOR||'';
-						currentPositionMarker.setIcon(image);
-								
-					}else{
-						currentPositionMarker.setIcon(image);
-					}
+					currentPositionMarker.setIcon(image_send1);
+					$.ajax({
+						url:'http://recorridos.vallen.mx/SIS/IniciarRecorrido/index.asp',
+						data:{ID_PARADA:12516,LATITUD_INICIO:position.coords.latitude,LONGITUD_INICIO:position.coords.longitude},
+						type:'get',
+						dataType: 'jsonp',
+						callbackParameter: 'callback',
+						success: function(data){
+
+							$.each(data.datosA, function(i,itemA){
+								var ESTADO_CONSULTA=itemA.ESTADO_CONSULTA||'';
+								ESTATUS_PARADA=itemA.ESTATUS_PARADA||'Estatus sin definir';
+								sessionStorage.setItem("ESTATUS_PARADA",ESTATUS_PARADA);
+                                
+								setInterval(function() {
+									GuardarMovimientos();
+								}, 3000);	
+							})
+
+						}
+					});
+
 				});
-		}, 10000);
-	};
+		}
+	}

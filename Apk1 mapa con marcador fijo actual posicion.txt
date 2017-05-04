@@ -1,0 +1,2 @@
+Apk1 mapa con marcador fijo actual posicion
+Apk2 mapa con marcador cambiando depende de la posicion
