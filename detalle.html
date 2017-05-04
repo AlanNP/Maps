@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name = "format-detection" content = "telephone=no" />
+	<title>Entrega de documentos</title>
+
+	<link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile.theme-1.4.5.css">
+	<link rel="stylesheet" href="css/vallen.css">
+	<link rel="stylesheet" href="css/vendor/font-awesome.min.css">
+
+	<script src="js/vendor/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<section data-role="page" class="h100">
+		<div class="map-route">
+			<a href="#popDetalles" id="boton" data-rel="popup" class="btn-pop pdetalles" data-transition="pop"><i class="fa fa-info"></i></a>
+			
+			<a href="#popIndicaciones" id="boton" data-rel="popup" class="btn-pop pindicaciones" data-transition="pop"><i class="fa fa-map-signs"></i></a>
+			
+			<div id="map-canvas"></div>
+
+			<div class="footer">
+				<a href="" class="btn-play" rel="external" data-role="button" data-theme="b" id="startroute">Iniciar ruta <i class="fa fa-play-circle"></i></a>
+				<div class="ui-grid-a mensajes-tareas" id="mensajesComplete">
+					<div class="ui-block-a">
+						<a href="#popupMensaje" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-d" data-transition="pop">Completado</a>
+					</div>
+					<div class="ui-block-b">
+						<a href="#popupMensaje2" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-c" data-transition="pop">No Completado</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div data-role="popup" id="popDetalles">
+				<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				<div class="info-detail">
+					<h3>ENTREGA DE DOCUMENTOS</h3>
+					<div class="scroll-info">
+						<!--<ul>
+							<li>Tipo de evento: Externo</li>
+							<li>Horario: 12pm - 1pm</li>
+							<li>Calle: Cerrada de los cedros #108 Lomas del Naranjal</li>
+							<li>Ciudad: Tampico</li>
+						</ul>
+						<h3>Descripción:</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore nesciunt odio, dolore voluptas a minima recusandae accusamus possimus ullam quos, dolorum optio omnis. Reiciendis laborum dicta repudiandae id perferendis itaque. Inventore nesciunt odio, dolore voluptas a minima recusandae accusamus possimus ullam quos, dolorum optio omnis. Reiciendis laborum dicta repudiandae id perferendis itaque.</p>!-->
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div data-role="popup" id="popIndicaciones">
+			<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+			<div class="info-detail">            
+				<div id="right-panel"></div>
+			</div>
+		</div>
+
+		<div data-role="popup" id="popupMensaje" data-theme="d" class="ui-corner-all">
+			<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-d ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+			<form>
+				<div style="padding:10px 20px;">
+					<h3>Comentarios</h3>
+					<textarea name="" id="" cols="30" rows="10"></textarea>
+					<a class="ui-btn ui-corner-all ui-shadow ui-btn-d ui-btn-icon-left ui-icon-check" href="resumen.html" rel="external">Completar</a>
+				</div>
+			</form>
+		</div>
+
+		<div data-role="popup" id="popupMensaje2" data-theme="c" class="ui-corner-all">
+			<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-c ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+			<form>
+				<div style="padding:10px 20px;">
+					<h3>Comentarios</h3>
+					<select name="" id="">
+						<option disabled selected>Motivo de cancelación</option>
+						<option value="">Error en dirección de entrega</option>
+						<option value="">No es el material que el Cliente requiere</option>
+						<option value="">Mal surtido (Almacen)</option>
+						<option value="">Horarios de recibo de Cliente</option>
+						<option value="">Días de recibo de Cliente</option>
+						<option value="">Material duplicado</option>
+						<option value="">Error de Facturacion</option>
+						<option value="">Error en Orden de Compra</option>
+						<option value="">Error de entrega de Chofer</option>
+						<option value="">Material incompleto </option>
+						<option value="">Material en mal estado</option>
+						<option value="">Material caduco</option>
+					</select>
+					<textarea name="" id="" cols="30" rows="10"></textarea>
+					<a class="ui-btn ui-corner-all ui-shadow ui-btn-c ui-btn-icon-left ui-icon-check" href="
+					parada-incompleta.html" rel="external">Enviar</a>
+				</div>
+			</form>
+		</div>
+
+		<div data-role="footer" data-position="fixed">
+		</div>
+        
+	</section>
+</body>
+
+<script src="http://maps.google.com/maps/api/js?v=3&language=es&key=AIzaSyAxVEXLMQTw73x9oObItBBIuYPg0DCDnC4"></script>
+<script src="js/main_map.js"></script>
+<script>
+	$(document).bind('mobileinit',function(){
+		$.mobile.changePage.defaults.changeHash = false;
+		$.mobile.hashListeningEnabled = false;
+		$.mobile.pushStateEnabled = false;
+	});
+
+	$(function() {
+		$('#startroute').on('click', function(){
+			$('#mensajesComplete').css('display','block');
+			$('#startroute').css('display','none');
+		});
+		
+	});
+</script>
+<script src="js/vendor/jquery.mobile-1.4.5.min.js"></script>
+</html>

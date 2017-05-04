@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name = "format-detection" content = "telephone=no" />
+	<title>Entrega de documentos</title>
+
+	<link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile.theme-1.4.5.css">
+	<link rel="stylesheet" href="css/vallen.css">
+	<link rel="stylesheet" href="css/vendor/font-awesome.min.css">
+
+	<script src="js/vendor/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<section data-role="page" class="bg">
+		<div data-role="header" data-position="fixed">
+			<div class="ui-grid-b">
+				<div class="ui-block-a">
+					<a href="#left-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-left"><i class="fa fa-bars"></i></a>
+				</div>
+				<div class="ui-block-b">
+					<figure class="logo-header">
+						<a href="ruta.html" rel="external"><img src="img/logo-vallen.png" alt=""></a>
+					</figure>
+				</div>
+				<div class="ui-block-c">
+					<a href="#right-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-right"><i class="fa fa-bell"></i></a>
+				</div>
+			</div>
+		</div>
+		<div data-role="content">
+			<div class="detail-stop">
+				<div class="header-detail3">
+					<h1>DETALLES DE LA PARADA</h1>
+					<i class="fa fa-times"></i>
+				</div>
+				<div class="info-detail">
+					<h2>ENTREGA DE DOCUMENTOS</h2>
+					<ul>
+						<li>Tipo de evento: Externo</li>
+						<li>Horario: 12pm - 1pm</li>
+						<li>Calle: Cerrada de los cedros #108 Lomas del Naranjal</li>
+						<li>Ciudad: Tampico</li>
+					</ul>
+					<h3>Motivo cancelación:</h3>
+					<p>Error en dirección de entrega</p>
+					<h3>Comentarios adicionales:</h3>
+					<p>-</p>
+				</div>
+			</div>
+
+
+			<a href="ruta.html" rel="external" data-role="button" data-theme="b">Regresar a mi lista de paradas</a>
+		<div>
+
+		<div data-role="panel" id="left-panel" data-theme="b" data-display="overlay">
+			<h2>Menú</h2>
+			<ul class="menu-panel">
+				<li><a href="ruta.html" rel="external"><i class="fa fa-truck"></i>Mi ruta de hoy</a></li>
+				<li><a href="rutas-anteriores.html" rel="external"><i class="fa fa-check"></i>Paradas Completadas</a></li>
+				<li><a href="reprogramadas.html" rel="external"><i class="fa fa-retweet"></i>Paradas Reprogramadas</a></li>
+				<li><a href="index.html" rel="external"><i class="fa fa-sign-out"></i> Cerrar Sesión</a></li>
+			</ul>
+		</div>
+
+		<div data-role="panel" id="right-panel" data-theme="b" data-display="overlay" data-position="right">
+			<h2><i class="fa fa-bell"></i> Mis Notificaciones</h2>
+			<ul class="notifications-list">
+				<li>
+					<a href="" class="notification">
+						<div class="asterix-notify">
+							<i class="fa fa-asterisk"></i>
+						</div>
+						<div class="text-notify">
+							<p>Se ha agregado una nueva parada a tu ruta del día</p>
+							<span class=""><i></i> 12 noviembre</span>
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="">
+						<div class="asterix-notify">
+							<i class="fa fa-asterisk"></i>
+						</div>
+						<div class="text-notify">
+							<p>Se ha agregado una nueva parada a tu ruta del día</p>
+							<span class=""><i></i> 12 noviembre</span>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</section>
+</body>
+
+<script>
+	$(document).bind('mobileinit',function(){
+		$.mobile.changePage.defaults.changeHash = false;
+		$.mobile.hashListeningEnabled = false;
+		$.mobile.pushStateEnabled = false;
+	});
+</script>
+<script src="js/vendor/jquery.mobile-1.4.5.min.js"></script>
+</html>

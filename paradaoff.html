@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Last-Modified" content="0">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name = "format-detection" content = "telephone=no" />
+	<title>Entrega de documentos</title>
+
+	<link rel="stylesheet" href="css/vendor/jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile.theme-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/font-awesome.min.css">
+	<link rel="stylesheet" href="css/vallen.css">
+	<link rel="stylesheet" href="css/styles.css">
+	<style type="text/css">
+		#central{
+			position: absolute;
+		}
+		#contenido{
+			color: orange;
+			position: relative;
+			right: -105px;
+		}
+	</style>
+
+</head>
+<body>
+
+	<div id="preloader">
+		<div id="loader">&nbsp;</div>
+	</div>
+
+	<section data-role="page" class="bg">
+		<div data-role="header" data-position="fixed">
+			<div class="ui-grid-b">
+				<div class="ui-block-a">
+					<a href="#left-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-left"><i class="fa fa-bars"></i></a>
+				</div>
+				<div class="ui-block-b">
+					<figure class="logo-header">
+						<a href="paradaoff.html" rel="external"><img src="img/logo-vallen.png" alt=""></a>
+					</figure>
+				</div>
+				<div id="numNotifications" class="notify-item"></div>
+			</div>
+		</div>
+		
+		<div data-role="content">
+			<ul class="list-stops" data-role="listview">
+				<li data-role='list-divider' data-divider-theme='b' data-theme='b' id="TOTAL_RUTAS">-</li>
+			</ul>
+			<ul class="list-stops" data-role="listview" id="RUTAS">
+			</ul>
+
+
+			<div id="botones">
+				
+				<a href="" class="btn-play" rel="external" data-role="button" data-theme="b" id="startroute">Iniciar ruta <i class="fa fa-play-circle"></i></a>
+				
+				<div class="ui-grid-a mensajes-tareas" id="mensajesComplete">
+					<div class="ui-block-a">
+						<a href="#popupCompletada" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-d" data-transition="pop">Completado</a>
+					</div>
+					<div class="ui-block-b">
+						<a href="#popupNoCompletada" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-c" data-transition="pop">No Completado</a>
+					</div>
+				</div>
+				
+			</div>
+			<div id="central">
+				<p id="contenido"></p>
+			</div>
+			
+			
+		</div>
+		<div data-role="popup" id="popupCompletada" data-theme="d" class="ui-corner-all">
+			<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-d ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+			<form id="comentario-final-form" name="comentario-final-form" action="">
+				<div style="padding:10px 20px;">
+					<h3>Comentarios</h3>
+					<textarea name="COMENTARIO_COMPLETADA_FINAL" id="COMENTARIO_COMPLETADA_FINAL" cols="30" rows="10"></textarea>
+					<a id="btn_COMENTARIO_FINAL" class="ui-btn ui-corner-all ui-shadow ui-btn-d ui-btn-icon-left ui-icon-check" href="javascript:ComentarioFinal();" rel="external" data-role="button">Guardar</a>
+				</div>
+			</form>
+		</div>
+
+		<div data-role="popup" id="popupNoCompletada" data-theme="c" class="ui-corner-all" >
+			<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-c ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+			<form>
+				<div style="padding:10px 20px;">
+					<select name="MotivoCancelacion" id="MotivoCancelacion">
+						<option value="" selected>Motivo de cancelación</option>
+						<option value="1">Error en dirección de entrega</option>
+						<option value="2">No es el material que el Cliente requiere</option>
+						<option value="3">Mal surtido (Almacen)</option>
+						<option value="4">Horarios de recibo de Cliente</option>
+						<option value="5">Días de recibo de Cliente</option>
+						<option value="6">Material duplicado</option>
+						<option value="7">Error de Facturacion</option>
+						<option value="8">Error en Orden de Compra</option>
+						<option value="9">Error de entrega de Chofer</option>
+						<option value="10">Material incompleto </option>
+						<option value="11">Material en mal estado</option>
+						<option value="12">Material caduco</option>
+					</select>
+					
+					
+					<label for="REPROGRAMAR">Reprogramar</label>
+					<input type="checkbox" name="REPROGRAMAR" id="REPROGRAMAR">
+
+
+					<div class="ui-grid-a" id="GRUPO_FECHA_REPROGRAMAR" style="display:none">
+						<div class="ui-block-a">
+							<label for="FECHA_REPROGRAMAR" data-icon="calendar" data-iconpos="left" data-mini="true" data-inline="true" class="ui-link ui-btn ui-icon-calendar ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all top6" role="label">Fecha</label>
+						</div>
+						<div class="ui-block-b">
+							<input type="date"  data-inline="true" name="FECHA_REPROGRAMAR" id="FECHA_REPROGRAMAR" placeholder="dd/mm/aaaa" value="">
+						</div>
+					</div>
+					
+					<div class="ui-grid-a" id="GRUPO_HORA_REPROGRAMAR" style="display:none">
+						<div class="ui-block-a">
+							<label for="HORA_REPROGRAMAR" data-icon="clock" data-iconpos="left" data-mini="true" data-inline="true" class="ui-link ui-btn ui-icon-clock ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all" role="label top6">Hora</label>
+						</div>
+						<div class="ui-block-b">
+							<input type="time" data-inline="true" name="HORA_REPROGRAMAR" id="HORA_REPROGRAMAR" placeholder="dd/mm/aaaa" value="">
+						</div>
+					</div>
+
+					<textarea name="COMENTARIO_NO_COMPLETADA_FINAL" id="COMENTARIO_NO_COMPLETADA_FINAL" cols="30" rows="10" placeholder="Comentarios de la Cancelación"></textarea>
+					<a id="btn_COMENTARIO_NO_COMPLETADA_FINAL" class="ui-btn ui-corner-all ui-shadow ui-btn-c ui-btn-icon-left ui-icon-check" href="javascript:ComentarioNoFinal();" rel="external">Guardar</a>
+				</div>
+			</form>
+		</div>
+		<div data-role="panel" id="left-panel" data-theme="b" data-display="overlay">
+			<h2>Menú</h2>
+			<ul class="menu-panel">
+				<li><a href="ruta.html" rel="external"><i class="fa fa-truck"></i>Mi ruta de hoy</a></li>
+				<li><a href="completadas.html" rel="external"><i class="fa fa-check"></i>Completadas</a></li>
+				<li><a href="reprogramadas.html" rel="external"><i class="fa fa-refresh"></i>Reprogramadas</a></li>
+				<li><a href="canceladas.html" rel="external"><i class="fa fa-ban"></i>Canceladas</a></li>
+				<li><a href="cerrar.html" rel="external"><i class="fa fa-sign-out"></i>Cerrar Sesión</a></li>
+				<li><a href="#" id="ID_REGID"></a></li>
+			</ul>
+		</div>
+
+		<div data-role="panel" id="right-panel" data-theme="b" data-display="overlay" data-position="right">
+			<h2><i class="fa fa-bell"></i>Mis Notificaciones</h2>
+			<ul class="notifications-list" id="LISTA_NOTIFICACIONES">
+			</ul>
+		</div>
+
+	</section>
+
+	<script src="http://maps.google.com/maps/api/js?v=3&language=es&key=AIzaSyAxVEXLMQTw73x9oObItBBIuYPg0DCDnC4"></script>
+	<script type="text/javascript" src="phonegap.js"></script>
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="js/vendor/jquery.mobile-1.4.5.min.js"></script>
+	<script src="js/main_map.js"></script>
+
+	<script>
+		var load= document.getElementById("contenido");
+		load.innerHTML='<p>Buscando</p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/ajax_loader.gif" height="30" width="30"><p>&nbsp;conexión</p>';
+		$('#contenido').css('display','none');
+		var ID_PARAD=sessionStorage.getItem('ID_PARADA')||localStorage.getItem('ID_PARADA');
+		var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+		db.transaction(function(tx){
+			tx.executeSql('SELECT * FROM PARADA WHERE ESTATUS_PARADA="En Ruta" ORDER BY ID ASC', [], function(tx, results) {
+				var val=results.rows.length;
+				if(val>0){
+					$('#botones').hide();
+				}
+			},null);	
+		});
+		db.transaction(function(tx){
+			tx.executeSql('SELECT * FROM PARADA WHERE ESTATUS_PARADA="En Ruta" AND ID_PARADA='+ID_PARAD, [], function(tx, results) {
+				var val2=results.rows.length;
+				if(val2>0){
+					sessionStorage.setItem('ESTATUS_PARADA',"En Ruta");
+					sessionStorage.setItem('PARADAOFF',1);
+					$('#botones').show();
+					setInterval(function() {
+						GuardaUbicaciones();
+					}, 8000);
+					setTimeout(function(){ 
+						top.location="paradaoff.html";
+					}, 90000);
+				}
+			},null);	
+		});
+		function init() {
+			//navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+			//alert('buscar posición')
+			navigator.geolocation.getCurrentPosition(checkCon);
+		}
+		function checkCon() {
+			var networkState = navigator.connection.type;
+			var states = {};
+			states[Connection.UNKNOWN]  = 'Unknown connection';
+			states[Connection.ETHERNET] = 'Ethernet connection';
+			states[Connection.WIFI]     = 'WiFi connection';
+			states[Connection.CELL_2G]  = 'Cell 2G connection';
+			states[Connection.CELL_3G]  = 'Cell 3G connection';
+			states[Connection.CELL_4G]  = 'Cell 4G connection';
+			states[Connection.CELL]     = 'Cell generic connection';
+			states[Connection.NONE]     = 'No network connection';
+			var connect=states[networkState];
+			if(connect!='No network connection'){
+				top.location="parada.html"
+			}
+			
+		}
+		var REGISTRO2=0;
+		var LAT2=0;
+		var LONG2=0;
+		document.addEventListener("deviceready", onDeviceReady, false);
+		function populateDB(tx) {
+			tx.executeSql('CREATE TABLE IF NOT EXISTS REGISTRAR_UBICACIONES (ID INTEGER PRIMARY KEY AUTOINCREMENT, ID_PARADA INTEGER, LATITUD_UBICACION TEXT, LONGITUD_UBICACION TEXT, FECHA_UBICACION TEXT)');
+		}
+		function onDeviceReady() {
+			var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+			db.transaction(populateDB, errorCB);
+			  // Android customization
+			  cordova.plugins.backgroundMode.setDefaults({ text:'Realizando tareas.'});
+              // Enable background mode
+              cordova.plugins.backgroundMode.enable();
+              // Called when background mode has been activated
+              cordova.plugins.backgroundMode.onactivate = function () {
+	              // Modify the currently displayed notification
+	              setTimeout(function () {
+	              // Modify the currently displayed notification
+	              cordova.plugins.backgroundMode.configure({
+	              	title: 'Ejecutándose en segundo plano.'
+	              });
+	          }, 3000);
+	          }
+	      }
+	      document.addEventListener("pause",onPause,false);
+	      function onPause() {
+	      	$timeout(function() {
+	      		console.log("Running in background for more than 5s now ...");
+	      	}, 5000);
+	      };
+	      var f = new Date();
+	      var fecha=f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear();
+	      function errorCB(err) {
+	      	alert("Error processing SQL: "+err.code);
+	      }
+	      var ID_USUARIO=sessionStorage.getItem('ID_USUARIO')||localStorage.getItem('ID_USUARIO');
+	      var ID_PARADA=sessionStorage.getItem('ID_PARADA')||localStorage.getItem('ID_PARADA');
+	      var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	      db.transaction(function (tx) {
+	      	tx.executeSql('SELECT * FROM PARADA WHERE ID_PARADA='+ID_PARADA, [], querySuccess, errorCB);
+	      });
+	      function querySuccess(tx, results) {
+	      	var len = results.rows.length;
+	      	var TITULOS='';
+	      	TITULOS+="	<div class='ui-grid-b title-header'>"
+	      	TITULOS+="		<div class='ui-block-a small'>Detalle de la parada</div>"
+	      	TITULOS+="		<div class='ui-block-b small text-center'></div>"	
+	      	TITULOS+="		<div class='ui-block-c small'>"+fecha+"</div>"
+	      	TITULOS+="	</div>"
+	      	$("#TOTAL_RUTAS").html(TITULOS);
+	      	for (var i = 0; i < len; i++) {
+	      		sessionStorage.setItem("ESTATUS_P",results.rows.item(i).ESTATUS_PARADA);
+	      		if(sessionStorage.getItem('ESTATUS_P')=='En Ruta'){
+	      			$('#mensajesComplete').css('display','block');
+	      			$('#startroute').css('display','none');
+	      		}
+	      		if(sessionStorage.getItem('ESTATUS_P')=='Programada'){
+	      			$('#mensajesComplete').css('display','none');
+	      			$('#startroute').css('display','block');	
+	      		}
+	      		if(sessionStorage.getItem('ESTATUS_P')=='Cancelada'){
+	      			$('#mensajesComplete').css('display','none');
+	      			$('#startroute').css('display','none');	
+	      		}
+	      		if(sessionStorage.getItem('ESTATUS_P')=='Completada'){
+	      			$('#mensajesComplete').css('display','none');
+	      			$('#startroute').css('display','none');
+	      		}
+	      		var str=String(results.rows.item(i).DOMICILIO_PARADA);
+	      		var spli=str.split(" ");
+	      		var li='';
+	      		li+="<li dat a-theme='e'>"	
+	      		li+="	<a href='' rel='external' class='ui-btn ui-btn-e ui-icon-carat-r'>"	
+	      		li+="		<div class='col-2 "+results.rows.item(i).PIN_PARADA+"'><i class='fa fa-map-marker'></i></div>"
+	      		li+="		<div class='col-10'>"
+	      		li+="			<h2>"+results.rows.item(i).REFERENCIA_PARADA+"</h2>"
+	      		li+="			<p>"+results.rows.item(i).DESCRIPCION_PARADA+"</p>"
+	      		li+="			<div class='details-list'>"
+	      		li+="				<p><i class='fa fa-truck'></i>"+results.rows.item(i).TIPO_PARADA+"</p>"
+	      		li+="				<p><i class='fa fa-circle-o'></i>"+results.rows.item(i).ESTATUS_PARADA+"</p>"
+	      		li+="				<p><i class='fa fa-clock-o'></i>"+results.rows.item(i).HORARIO_ENTREGA+"</p>"
+	      		li+="				<p><i class='fa fa-map-o'></i>"
+	      		for (var j = 0; j < spli.length; j++) {
+	      			if (j==3) {
+	      				li+="<br>"	
+	      			}
+	      			li+=spli[j]+" "
+	      		}
+	      		li+="</p>"
+	      		li+="				<p>"+results.rows.item(i).CIUDAD_PARADA+", "+results.rows.item(i).ESTADO_PARADA+"</p>"
+	      		if(results.rows.item(i).COMENTARIO_FINAL){
+	      			li+="			<p><i class='fa fa-tag'></i>"+results.rows.item(i).COMENTARIO_FINAL+"</p>"
+	      		}
+	      		li+="			</div>"
+	      		li+="		</div>"
+	      		li+="	</a>"
+	      		li+="</li>"
+	      		$("#RUTAS").append(li);  
+	      	}
+	      }
+	      var LAT='0';
+	      var LONG='0';
+	      var REGISTRO=0;
+	      var f = new Date();
+	      var fecha=f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear();
+	      function GuardaUbicaciones(){
+	      	try{
+	      		if (sessionStorage.getItem('ESTATUS_P')=='En Ruta'){
+	      			setInterval(function() {
+	      				var positionTimer = navigator.geolocation.getCurrentPosition(
+	      					function (position) {
+	      						if(REGISTRO==0){
+	      							var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	      							db.transaction(function(tx){
+	      								tx.executeSql('INSERT INTO REGISTRAR_UBICACIONES (ID_PARADA,LATITUD_UBICACION,LONGITUD_UBICACION,FECHA_UBICACION) VALUES ('+ID_PARADA+',"'+position.coords.latitude+'","'+position.coords.longitude+'","'+fecha+'")');
+	      							});
+	      							LAT=position.coords.latitude;
+	      							LONG=position.coords.longitude;
+	      							REGISTRO=1;
+	      						}else{
+	      							var lat=LAT-position.coords.latitude;
+	      							var long=LONG-position.coords.longitude;
+	      							if(lat<0){
+	      								lat=lat*(-1);
+	      							}
+	      							if(long<0){
+	      								long=long*(-1);	
+	      							}
+	      							if (lat>0.000700 && lat<0.002000 || long>0.000700 && long<0.002000){
+	      								var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	      								db.transaction(function(tx){
+	      									tx.executeSql('INSERT INTO REGISTRAR_UBICACIONES (ID_PARADA,LATITUD_UBICACION,LONGITUD_UBICACION,FECHA_UBICACION) VALUES ('+ID_PARADA+',"'+position.coords.latitude+'","'+position.coords.longitude+'","'+fecha+'")');
+	      								});
+	      								LAT=position.coords.latitude;
+	      								LONG=position.coords.longitude;
+	      							}
+	      						}
+	      					});
+	      			}, 15000);
+	      		};
+	      	}
+	      	catch(err){
+	      		alert("Error: "+err);
+	      		load.innerHTML='<p>Error: '+err+'</p>';
+	      		$('#contenido').css('display','block');
+	      	}
+	      };
+	      if(ID_USUARIO==0 || ID_PARADA==0){
+	      	window.location="index.html"
+	      }
+	      $(window).load(function() {
+	      	$('#preloader').fadeOut('slow');
+	      });
+	      var conts=0,val;
+	      function initLocat() {
+			//navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+			//alert('buscar posición')
+			navigator.geolocation.getCurrentPosition(checkConnect);
+		}
+		function checkConnect() {
+			try{
+				var networkState = navigator.connection.type;
+				var states = {};
+				states[Connection.UNKNOWN]  = 'Unknown connection';
+				states[Connection.ETHERNET] = 'Ethernet connection';
+				states[Connection.WIFI]     = 'WiFi connection';
+				states[Connection.CELL_2G]  = 'Cell 2G connection';
+				states[Connection.CELL_3G]  = 'Cell 3G connection';
+				states[Connection.CELL_4G]  = 'Cell 4G connection';
+				states[Connection.CELL]     = 'Cell generic connection';
+				states[Connection.NONE]     = 'No network connection';
+				var connect=states[networkState];
+				if(connect!='No network connection'){
+					Registro();
+					if(conts==1){
+						top.location="parada.html"
+					} 
+				}else{
+					$('#contenido').css('display','block');
+					setTimeout("$('#contenido').css('display','none')", 3000 );
+				}
+			}
+			catch(err){
+				alert("Error: "+err);
+				load.innerHTML='<p>Error: '+err+'</p>';
+				$('#contenido').css('display','block');
+			}
+		}
+		try{
+			setInterval(function() {
+				initLocat();
+			}, 10000);
+		}catch(err){
+			alert("Error"+err);
+		}
+		function Registro(){
+			var ID_PARAD=sessionStorage.getItem('ID_PARADA')||localStorage.getItem('ID_PARADA');
+			var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * FROM REGISTRAR_UBICACIONES WHERE ID_PARADA= '+ID_PARAD+' ORDER BY ID ASC', [], function(tx, results) {
+					val=results.rows.length;
+					for (var i = 0; i < val; i++){
+						var latitud=results.rows.item(i).LATITUD_UBICACION; 
+						var longitud=results.rows.item(i).LONGITUD_UBICACION;
+						if(i==0){
+							var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+							db.transaction(function(tx){
+								tx.executeSql('SELECT * FROM PARADA_T WHERE ID_PARADA= '+ID_PARAD, [], function(tx, results) {
+									var val2=results.rows.length;
+									for (var j = 0; j < val2; j++){
+										var obj=String(results.rows.item(j).HORARIO_INICIO);
+										$.ajax({
+											url:'http://recorridos.vallen.mx/SIS/IniciarRecorrido/index2.asp',
+											data:{ID_PARADA:ID_PARAD,LATITUD_INICIO:latitud,LONGITUD_INICIO:longitud,FECHA_INICIO:obj},
+											type:'get',
+											dataType: 'jsonp',
+											callbackParameter: 'callback',
+											success: function(data){
+											}
+										});
+									}
+								},null);	
+							});
+						}	
+						$.ajax({
+							url:'http://recorridos.vallen.mx/SIS/ReportarUbicacion/index.asp',
+							data:{ID_PARADA:ID_PARAD,latitude:latitud,longitude:longitud},
+							type:'get',
+							dataType: 'jsonp',
+							callbackParameter: 'callback',
+							success: function(data){
+								conts=1;
+							}
+						});
+					}
+					if(val==0){
+						conts=1;
+					}
+				},null);
+				tx.executeSql('DELETE FROM REGISTRAR_UBICACIONES WHERE ID_PARADA='+ID_PARAD);	
+			});
+		}
+		function ComentarioFinal(){
+			var ID_PARAD=sessionStorage.getItem('ID_PARADA')||localStorage.getItem('ID_PARADA');
+			var comentario=document.getElementById("COMENTARIO_COMPLETADA_FINAL").value;
+			var g= new Date();	
+			var fech=g.getFullYear + "-" + (g.getMonth() +1) + "-" + g.getDate+" "+g.getHours()+":"+g.getMinutes();
+			var fecha=g.getDate() + "/" + (g.getMonth() +1) + "/" + g.getFullYear();
+			var hora=g.getHours();
+			var minuto=g.getMinutes();
+			var dia=g.getDate();
+			var mes=g.getMonth()+1;
+			if (g.getHours()<10) {
+				hora="0"+hora;
+			}
+			if(g.getMinutes()<10){
+				minuto="0"+minuto;
+			}
+			if(g.getDate()<10){
+				dia="0"+dia;
+			}
+			if(g.getMonth()<10){
+				mes="0"+mes;
+			}
+			var horaf=g.getFullYear()+"-"+mes+"-"+dia+" "+hora+":"+minuto;
+			var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * FROM PARADA_T WHERE ID_PARADA= '+sessionStorage.getItem('ID_PARADA'), [], function(tx, results) {
+					val=results.rows.length;
+					for (var i = 0; i < val; i++){
+						var obj=String(results.rows.item(i).HORARIO_INICIO);
+						var tiempo=restarHoras(obj,horaf);
+						db.transaction(function(tx){
+							tx.executeSql('UPDATE PARADA_T SET TIEMPO="'+tiempo+'",ESTATUS_PARADA="Completada",HORARIO_FIN ="'+horaf+'",COMENTARIO_FINAL="'+comentario+'" WHERE ID_PARADA='+ID_PARAD);
+						});
+					}
+				},null);	          
+			});	
+			db.transaction(function(tx){
+				tx.executeSql('INSERT INTO REGISTRAR_UBICACIONES (ID_PARADA,LATITUD_UBICACION,LONGITUD_UBICACION,FECHA_UBICACION) VALUES (12424,"22.22222222222","-97.22222222222","2017-04-29")');
+			});
+			
+			if(comentario==''){	
+				alert("Escribe tus comentarios.");
+			}else{
+				var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1); 	
+				db.transaction(function(tx){
+					tx.executeSql('UPDATE PARADA SET ESTATUS_PARADA= "Completada", COMENTARIO_FINAL="'+comentario+'", FECHA_FIN="'+horaf+'" WHERE ID_PARADA= '+ID_PARADA);
+				});
+				var positionTimer = navigator.geolocation.getCurrentPosition(
+					function (position) {
+						db.transaction(function(tx){
+							tx.executeSql('INSERT INTO REGISTRAR_UBICACIONES (ID_PARADA,LATITUD_UBICACION,LONGITUD_UBICACION,FECHA_UBICACION) VALUES ('+ID_PARADA+',"'+position.coords.latitude+'","'+position.coords.longitude+'","'+fecha+'")');
+						});
+					});
+				sessionStorage.setItem('REGISTRO',0);
+				sessionStorage.setItem('PARADAOFF',0);
+				$("#btn_COMENTARIO_FINAL").html("Guardando <img src='img/ajax-loader.gif'>")
+				setTimeout("location.href='ruta.html'", 3000);
+			}
+		}
+		function ComentarioNoFinal(){
+			var ID_PARAD=sessionStorage.getItem('ID_PARADA')||localStorage.getItem('ID_PARADA');
+			var COMENTARIO_FINAL = $('#COMENTARIO_NO_COMPLETADA_FINAL').val();
+			var ID_CANCELACION = $('#MotivoCancelacion').val();
+			var REPROGRAMAR_PARADA = 0;
+			
+			if($("#REPROGRAMAR").is(':checked')) {  
+				REPROGRAMAR_PARADA=1	
+			}
+			var FECHA_REPROGRAMAR = $('#FECHA_REPROGRAMAR').val();
+			var HORA_REPROGRAMAR  = $('#HORA_REPROGRAMAR').val();
+			$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").attr("disabled", "disabled");
+			if(COMENTARIO_FINAL==''){	
+				alert("Escribe tus comentarios.");
+				setTimeout(function () {
+					$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").removeAttr("disabled");
+				}, 2000);
+				return false;
+			}
+			
+			if(REPROGRAMAR_PARADA==1 && FECHA_REPROGRAMAR==''){	
+				alert("Selecciona una Fecha para Reprogramar.");
+				setTimeout(function () {
+					$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").removeAttr("disabled");
+				}, 2000);
+				return false;
+			}
+			if(ID_CANCELACION==''){	
+				alert("Selecciona el motivo de la cancelación.");
+				setTimeout(function () {
+					$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").removeAttr("disabled");
+				}, 2000);
+				return false;
+			}
+			var g= new Date();	
+			var hora=g.getHours();
+			var minuto=g.getMinutes();
+			var dia=g.getDate();
+			var mes=g.getMonth()+1;
+			if (g.getHours()<10) {
+				hora="0"+hora;
+			}
+			if(g.getMinutes()<10){
+				minuto="0"+minuto;
+			}
+			if(g.getDate()<10){
+				dia="0"+dia;
+			}
+			if(g.getMonth()<10){
+				mes="0"+mes;
+			}
+			var horaf=g.getFullYear()+"-"+mes+"-"+dia+" "+hora+":"+minuto;
+			var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+			db.transaction(function(tx){
+				tx.executeSql('SELECT * FROM PARADA_T WHERE ID_PARADA= '+sessionStorage.getItem('ID_PARADA'), [], function(tx, results) {
+					val=results.rows.length;
+					for (var i = 0; i < val; i++){
+						var obj=String(results.rows.item(i).HORARIO_INICIO);
+						var tiempo=restarHoras(obj,horaf);
+						if(REPROGRAMAR_PARADA==0){
+							db.transaction(function(tx){
+								tx.executeSql('UPDATE PARADA_T SET TIEMPO="'+tiempo+'",ESTATUS_PARADA="Cancelada",HORARIO_FIN ="'+horaf+'",COMENTARIO_FINAL="'+COMENTARIO_FINAL+'" WHERE ID_PARADA='+ID_PARAD);
+							});
+						}else{
+							db.transaction(function(tx){
+								tx.executeSql('UPDATE PARADA_T SET TIEMPO="'+tiempo+'",ESTATUS_PARADA="Reprogramada",HORARIO_FIN ="'+horaf+'",COMENTARIO_FINAL="'+COMENTARIO_FINAL+'" WHERE ID_PARADA='+ID_PARAD);
+							});	
+						}
+					}
+				},null);	
+			});	
+			var fecha=g.getDate() + "/" + (g.getMonth() +1) + "/" + g.getFullYear();
+			var positionTimer = navigator.geolocation.getCurrentPosition(
+				function (position) {
+					db.transaction(function(tx){
+						tx.executeSql('INSERT INTO REGISTRAR_UBICACIONES (ID_PARADA,LATITUD_UBICACION,LONGITUD_UBICACION,FECHA_UBICACION) VALUES ('+ID_PARAD+',"'+position.coords.latitude+'","'+position.coords.longitude+'","'+fecha+'")');
+					});
+				});
+			db.transaction(function(tx){
+				tx.executeSql('UPDATE PARADA SET ESTATUS_PARADA= "Cancelada", COMENTARIO_FINAL="'+COMENTARIO_FINAL+'",ID_CANCELACION='+ID_CANCELACION+',REPROGRAMAR="'+REPROGRAMAR_PARADA+'", FECHA_REPROGRAMAR="'+FECHA_REPROGRAMAR+'", HORA_REPROGRAMAR="'+HORA_REPROGRAMAR+'" WHERE ID_PARADA= '+ID_PARAD);
+			});
+			sessionStorage.setItem('REGISTRO',0);
+			sessionStorage.setItem('PARADAOFF',0);
+			$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").html("Guardando <img src='img/ajax-loader.gif'>")
+			setTimeout("location.href='ruta.html'", 3000);
+			
+		}
+		$('#REPROGRAMAR').on('click', function(){
+			if($("#REPROGRAMAR").is(':checked')) {  
+				$('#GRUPO_FECHA_REPROGRAMAR').css('display','block');
+				$('#GRUPO_HORA_REPROGRAMAR').css('display','block');
+			}else{
+				$('#GRUPO_FECHA_REPROGRAMAR').css('display','none');
+				$('#GRUPO_HORA_REPROGRAMAR').css('display','none');
+			}
+		});
+		$('#startroute').on('click', function(){
+			var g= new Date();	
+			var hora=g.getHours();
+			var minuto=g.getMinutes();
+			var dia=g.getDate();
+			var mes=g.getMonth()+1;
+			if (g.getHours()<10) {                                
+				hora="0"+hora;
+			}
+			if(g.getMinutes()<10){                 
+				minuto="0"+minuto;
+			}
+			if(g.getDate()<10){
+				dia="0"+dia;
+			}
+			if(g.getMonth()<10){
+				mes="0"+mes;
+			}
+			var horai=g.getFullYear()+"-"+mes+"-"+dia+" "+hora+":"+minuto;
+			var r = confirm("Confirma el inicio de esta tarea.");
+			if (r == true) {
+				sessionStorage.setItem('PARADAOFF',1);
+				sessionStorage.setItem('ESTATUS_PARADA',"En Ruta");
+				sessionStorage.setItem('ESTATUS_P',"En Ruta");
+				$('#startroute').css('display','none');
+				$('#mensajesComplete').css('display','block');
+				var ID_PARAD=sessionStorage.getItem('ID_PARADA')||localStorage.getItem('ID_PARADA');
+				var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1); 	
+				db.transaction(function(tx){
+					tx.executeSql('UPDATE PARADA SET ESTATUS_PARADA= "En Ruta" WHERE ID_PARADA= '+ID_PARADA);
+				});
+				db.transaction(function(tx){
+					tx.executeSql('UPDATE PARADA_T SET HORARIO_INICIO ="'+horai+'" WHERE ID_PARADA='+ID_PARADA);
+				});
+				setInterval(function() {
+					GuardaUbicaciones();
+				}, 8000);
+				setTimeout(function(){ 
+					top.location="paradaoff.html";
+				}, 90000);
+			};
+		});
+		function restarHoras(inicio,fin) {
+			var fechaInicio = new Date(inicio);
+			var fechaFin = new Date(fin);
+			var dif= fechaFin - fechaInicio; 
+			var difSeg = Math.floor(dif/1000);
+            var segundos = difSeg % 60; //segundos
+            var difMin = Math.floor(difSeg/60); 
+            var minutos = difMin % 60; //minutosz
+            var difHs = Math.floor(difMin/60);
+            var horas = difHs % 24; //horas
+            return horas+":"+minutos; 
+        }
+    </script>
+
+</body>
+
+
+
+</html>

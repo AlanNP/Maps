@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name = "format-detection" content = "telephone=no" />
+	<title>Entrega de documentos</title>
+
+	<link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile.theme-1.4.5.css">
+	<link rel="stylesheet" href="css/vallen.css">
+	<link rel="stylesheet" href="css/vendor/font-awesome.min.css">
+
+	<script src="js/vendor/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<section data-role="page" class="bg">
+		<div data-role="header" data-position="fixed">
+			<div class="ui-grid-b">
+				<div class="ui-block-a">
+					<a href="#left-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-left"><i class="fa fa-bars"></i></a>
+				</div>
+				<div class="ui-block-b">
+					<figure class="logo-header">
+						<a href="ruta.html" rel="external"><img src="img/logo-vallen.png" alt=""></a>
+					</figure>
+				</div>
+				<div class="ui-block-c">
+					<a href="#right-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-right"><i class="fa fa-bell"></i></a>
+				</div>
+			</div>
+		</div>
+		
+		<div data-role="content">
+			<div data-role="collapsible-set" id="routes-collapsible">
+
+				<div data-role="collapsible" data-collapsed="false" data-theme="b">
+					<p>
+						<ul class="list-route-old">
+						</ul>
+					</p>
+				</div>
+
+				<div data-role="collapsible" data-theme="b">
+					<h3></h3>
+					<p>
+						<ul class="list-route-old">
+						</ul>
+					</p>
+				</div>
+
+			</div>
+		<div>
+
+		<div data-role="panel" id="left-panel" data-theme="b" data-display="overlay">
+			<h2>Menú</h2>
+			<ul class="menu-panel">
+				<li><a href="ruta.html" rel="external"><i class="fa fa-truck"></i>Mi ruta de hoy</a></li>
+				<li><a href="rutas-anteriores.html" rel="external"><i class="fa fa-check"></i>Paradas Completadas</a></li>
+				<li><a href="reprogramadas.html" rel="external"><i class="fa fa-retweet"></i>Paradas Reprogramadas</a></li>
+				<li><a href="index.html" rel="external"><i class="fa fa-sign-out"></i> Cerrar Sesión</a></li>
+			</ul>
+		</div>
+
+		<div data-role="panel" id="right-panel" data-theme="b" data-display="overlay" data-position="right">
+			<h2><i class="fa fa-bell"></i> Mis Notificaciones</h2>
+			<ul class="notifications-list">
+			</ul>
+		</div>
+
+	</section>
+</body>
+
+<script>
+	$(document).bind('mobileinit',function(){
+		$.mobile.changePage.defaults.changeHash = false;
+		$.mobile.hashListeningEnabled = false;
+		$.mobile.pushStateEnabled = false;
+	});
+</script>
+<script src="js/vendor/jquery.mobile-1.4.5.min.js"></script>
+</html>

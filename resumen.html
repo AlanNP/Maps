@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name = "format-detection" content = "telephone=no" />
+	<title>Entrega de documentos</title>
+
+	<link rel="stylesheet" href="css/vendor/jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile.theme-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/font-awesome.min.css">
+	<link rel="stylesheet" href="css/vallen.css">
+	<link rel="stylesheet" href="css/styles.css">
+    
+	<script src="js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="js/vendor/jquery-2.1.4.min.js" type="text/javascript"></script>
+    <script src="js/vendor/jquery.mobile-1.4.5.min.js" type="text/javascript"></script>
+
+</head>
+<body>
+
+	<div id="preloader">
+    	<div id="loader">&nbsp;</div>
+	</div>
+
+	<section data-role="page" class="bg">
+		<div data-role="header" data-position="fixed">
+			<div class="ui-grid-b">
+				<div class="ui-block-a">
+					<a href="#left-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-left"><i class="fa fa-bars"></i></a>
+				</div>
+				<div class="ui-block-b">
+					<figure class="logo-header">
+						<a href="ruta.html" rel="external"><img src="img/logo-vallen.png" alt=""></a>
+					</figure>
+				</div>
+				<div class="ui-block-c">
+					<a href="#right-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-right"><i class="fa fa-bell"></i></a>
+				</div>
+			</div>
+		</div>
+		<div data-role="content">
+			<div class="detail-stop">
+				<div class="header-detail2">
+					<h1>DETALLES DE LA PARADA</h1>
+					<i class="fa fa-check"></i>
+				</div>
+				<div class="info-detail">
+					<h3>Comentarios:</h3>
+					<ul>
+						<li id="COMENTARIO_FINAL">-</li>
+					</ul>
+					<h3>Resumen:</h3>
+					<ul id="INFO_DETALLES">
+					</ul>
+				</div>
+			</div>
+
+
+			<a href="ruta.html" rel="external" data-role="button" data-theme="b">Regresar a mi lista de paradas</a>
+		</div>
+
+		<div data-role="panel" id="left-panel" data-theme="b" data-display="overlay">
+			<h2>Menú</h2>
+			<ul class="menu-panel">
+				<li><a href="ruta.html" rel="external"><i class="fa fa-truck"></i>Mi ruta de hoy</a></li>
+				<li><a href="rutas-anteriores.html" rel="external"><i class="fa fa-check"></i>Paradas Completadas</a></li>
+				<li><a href="reprogramadas.html" rel="external"><i class="fa fa-retweet"></i>Paradas Reprogramadas</a></li>
+				<li><a href="index.html" rel="external"><i class="fa fa-sign-out"></i> Cerrar Sesión</a></li>
+			</ul>
+		</div>
+
+		<div data-role="panel" id="right-panel" data-theme="b" data-display="overlay" data-position="right">
+			<h2><i class="fa fa-bell"></i> Mis Notificaciones</h2>
+			<ul class="notifications-list">
+			</ul>
+		</div>
+	</section>
+</body>
+
+<script>
+
+		$(window).load(function() {
+			
+			setTimeout(function(){ 
+				$('#preloader').fadeOut('slow');
+			}, 4000);
+			
+		});
+
+        $(document).bind('mobileinit',function(){
+            $.mobile.changePage.defaults.changeHash = false;
+            $.mobile.hashListeningEnabled = false;
+            $.mobile.pushStateEnabled = false;
+        });
+	
+
+        $(function() {
+			ID_PARADA=sessionStorage.getItem('ID_PARADA')||localStorage.getItem('ID_PARADA');
+			DetallesParada(ID_PARADA);
+        });
+
+
+		function DetallesParada(ID_PARADA){
+			
+			$.ajax({
+				url:'http://recorridos.vallen.mx/sis/ResumenParada/index.asp',
+				data:{ID_PARADA:ID_PARADA},
+				type:'get',
+				dataType: 'jsonp',
+				callbackParameter: 'callback',
+				success: function(data){
+		
+					$.each(data.datos, function(i,item){
+		
+						var ESTADO_CONSULTA=item.ESTADO_CONSULTA||'';
+						var	REFERENCIA_PARADA=item.REFERENCIA_PARADA||'';
+						var	DESCRIPCION_PARADA=item.DESCRIPCION_PARADA||'';
+						var	ESTATUS_PARADA=item.ESTATUS_PARADA||'Sin definir';
+						var	HORA_INICIO=item.HORA_INICIO||'Sin definir';
+						var	HORA_FIN=item.HORA_FIN||'Sin definir';
+						var	TOTAL_KILOMETROS=item.TOTAL_KILOMETROS||'';
+						var	DOMICILIO=item.DOMICILIO||'Sin definir';
+						var	CIUDAD_PARADA=item.CIUDAD_PARADA||'Sin definir';
+						var	ESTADO_PARADA=item.ESTADO_PARADA||'Sin definir';
+						var	TIPO_PARADA=item.TIPO_PARADA||'Sin definir';
+						var	COMENTARIOFINAL=item.COMENTARIO_FINAL||'';
+						var	TIPO_CANCELACION=item.TIPO_CANCELACION||'';
+						var	REPROGRAMADA=item.REPROGRAMADA||'';
+						var	FECHA_REPROGRAMADA=item.FECHA_REPROGRAMADA||'';
+						var	HORA_REPROGRAMADA=item.HORA_REPROGRAMADA||'';
+						var	TIEMPO=item.TIEMPO||'';
+
+						$("#COMENTARIO_FINAL").html(COMENTARIOFINAL);
+						
+						var INFODETALLES = ''
+						if(REPROGRAMADA=='REPROGRAMADA'){
+							INFODETALLES+="<li>"+REPROGRAMADA+"</li>"						
+							INFODETALLES+="<li>Fecha Reprogramada: "+FECHA_REPROGRAMADA+"</li>"						
+							INFODETALLES+="<li>Hora Reprogramada: "+HORA_REPROGRAMADA+"</li>"						
+						}else{
+							
+							if(HORA_INICIO=='0:0'){
+								HORA_INICIO=''
+								HORA_FIN=''
+								TIEMPO=''
+							}
+
+							INFODETALLES+="<li>Hora de inicio: "+HORA_INICIO+"</li>"						
+							INFODETALLES+="<li>Hora de llegada: "+HORA_FIN+"</li>"						
+							INFODETALLES+="<li>Tiempo recorrido: "+TIEMPO+"</li>"						
+							//INFODETALLES+="<li>Kilómetros recorridos: "+TOTAL_KILOMETROS+"</li>"						
+						};
+						
+						$("#INFO_DETALLES").html(INFODETALLES);
+						
+					})	
+				}
+			});
+	
+		};		
+	
+</script>
+
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Last-Modified" content="0">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name = "format-detection" content = "telephone=no" />
+	<title>Entrega de documentos</title>
+
+	<link rel="stylesheet" href="css/vendor/jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/jquery.mobile.theme-1.4.5.css">
+	<link rel="stylesheet" href="css/vendor/font-awesome.min.css">
+	<link rel="stylesheet" href="css/vallen.css">
+	<link rel="stylesheet" href="css/styles.css">
+	<style type="text/css">
+		#central{
+			position: absolute;
+		}
+		#contenido2{
+			color: orange;
+			position: relative;
+			right: -115px;
+		}
+	</style>
+
+</head>
+<body>
+
+	<div id="preloader">
+	</br></br></br></br></br></br></br></br></br><p id="contenido">
+	<div id="loader">&nbsp;</div>
+
+</div>
+
+<section data-role="page" class="bg">
+	<div data-role="header" data-position="fixed">
+		<div class="ui-grid-b">
+			<div class="ui-block-a">
+				<a href="#left-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-left"><i class="fa fa-bars"></i></a>
+			</div>
+			<div class="ui-block-b">
+				<figure class="logo-header">
+					<a href="ruta.html" rel="external"><img src="img/logo-vallen.png" alt=""></a>
+				</figure>
+			</div>
+			<div class="ui-block-c">
+				<a href="#right-panel" id="btn-right-panel" data-role="button" data-iconpos="notext" data-icon="" class="pull-right notifications-panel"><i class="fa fa-bell"></i></a>
+			</div>
+			<div id="numNotifications" class="notify-item"></div>
+		</div>
+	</div>
+
+	<div data-role="content">
+		<ul class="list-stops" data-role="listview">
+			<li data-role='list-divider' data-divider-theme='b' data-theme='b' id="TOTAL_RUTAS">-</li>
+		</ul>
+		<ul class="list-stops" data-role="listview" id="RUTAS">
+		</ul>
+	</div>
+	<div id="central">
+		<p id="contenido2"></p>
+	</div>
+
+	<div data-role="panel" id="left-panel" data-theme="b" data-display="overlay">
+		<h2>Menú</h2>
+		<ul class="menu-panel">
+			<li><a href="ruta.html" rel="external"><i class="fa fa-truck"></i>Mi ruta de hoy</a></li>
+			<li><a href="completadas.html" rel="external"><i class="fa fa-check"></i>Completadas</a></li>
+			<li><a href="reprogramadas.html" rel="external"><i class="fa fa-refresh"></i>Reprogramadas</a></li>
+			<li><a href="canceladas.html" rel="external"><i class="fa fa-ban"></i>Canceladas</a></li>
+			<li><a href="cerrar.html" rel="external"><i class="fa fa-sign-out"></i>Cerrar Sesión</a></li>
+			<li><a href="#" id="ID_REGID"></a></li>
+		</ul>
+	</div>
+
+	<div data-role="panel" id="right-panel" data-theme="b" data-display="overlay" data-position="right">
+		<h2><i class="fa fa-bell"></i>Mis Notificaciones</h2>
+		<ul class="notifications-list" id="LISTA_NOTIFICACIONES">
+		</ul>
+	</div>
+
+</section>
+
+<script type="text/javascript" src="phonegap.js"></script>
+<script type="text/javascript" src="js/notificaciones.js"></script>
+<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/vendor/jquery.mobile-1.4.5.min.js"></script>
+
+<script type="text/javascript" src="js/index_v2.js"></script>
+
+<script>
+	var load= document.getElementById("contenido2");
+	load.innerHTML='<p>Sincronizando</p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/ajax_loader.gif" height="30" width="30"><p></p>';
+	$('#contenido2').css('display','none');	
+	function initLocationProced2() {
+				//navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+				
+				navigator.geolocation.getCurrentPosition(checkConnection2);
+			}
+			var connect;
+			function checkConnection2() {
+				var networkState = navigator.connection.type;
+				var states = {};
+				states[Connection.UNKNOWN]  = 'Unknown connection';
+				states[Connection.ETHERNET] = 'Ethernet connection';
+				states[Connection.WIFI]     = 'WiFi connection';
+				states[Connection.CELL_2G]  = 'Cell 2G connection';
+				states[Connection.CELL_3G]  = 'Cell 3G connection';
+				states[Connection.CELL_4G]  = 'Cell 4G connection';
+				states[Connection.CELL]     = 'Cell generic connection';
+				states[Connection.NONE]     = 'No network connection';
+				var connect=states[networkState];
+				if(connect!='No network connection'){
+					datos2();		
+				}
+			}
+			initLocationProced2();
+			var cont=0;
+			var conts=0;
+			var connecti;
+			var t=localStorage.length;
+			var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+			db.transaction(function (tx) {
+				tx.executeSql('CREATE TABLE IF NOT EXISTS PARADA_T (ID_PARADA INTEGER,PIN_PARADA TEXT, REFERENCIA_PARADA TEXT, DESCRIPCION_PARADA TEXT,TIPO_PARADA TEXT,HORARIO_INICIO TEXT, HORARIO_FIN TEXT, TIEMPO TEXT,COMENTARIO_FINAL TEXT,ESTATUS_PARADA TEXT)');
+			});
+			if (t>0)  {
+				localStorage.setItem('REGID',sessionStorage.getItem('REGID'));
+				$.ajax({
+					url:'http://recorridos.vallen.mx/SIS/login/index.asp',
+					data:{USUARIO_INTRANET:localStorage.getItem('USUARIO_INTRANET'),PASSWORD_USUARIO:localStorage.getItem('PASSWORD_USUARIO'),REGID:localStorage.getItem('REGID'),PLATAFORMA:1},
+					type:'get',
+					dataType: 'jsonp',
+					callbackParameter: 'callback',
+					success: function(data){
+						$.each(data.datos, function(i,item){
+							var ID_RUTA=item.ID_RUTA||0;
+							if(ID_RUTA!=localStorage.getItem('ID_RUTA')){
+								var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+								db.transaction(function(tx){
+									tx.executeSql('DELETE FROM PARADA');
+									tx.executeSql('DELETE FROM REGISTRAR_UBICACIONES'); 
+									tx.executeSql('DELETE FROM PARADA_T'); 
+								});
+								localStorage.setItem('ID_RUTA',ID_RUTA); 
+								location.reload();
+							}
+						})  
+					},
+					error: function() {
+					}
+				});
+			}
+			function initLocationProced() {
+				//navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+				
+				navigator.geolocation.getCurrentPosition(checkConnection);
+			}
+			var connect;
+			function checkConnection() {
+				var networkState = navigator.connection.type;
+				var states = {};
+				states[Connection.UNKNOWN]  = 'Unknown connection';
+				states[Connection.ETHERNET] = 'Ethernet connection';
+				states[Connection.WIFI]     = 'WiFi connection';
+				states[Connection.CELL_2G]  = 'Cell 2G connection';
+				states[Connection.CELL_3G]  = 'Cell 3G connection';
+				states[Connection.CELL_4G]  = 'Cell 4G connection';
+				states[Connection.CELL]     = 'Cell generic connection';
+				states[Connection.NONE]     = 'No network connection';
+				var connect=states[networkState];
+				if(connect!='No network connection'){
+					datos();	
+				}
+			}
+			function initLocationProced3() {
+				//navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+				
+				navigator.geolocation.getCurrentPosition(checkConnection3);
+			}
+			function checkConnection3() {
+				var networkState = navigator.connection.type;
+				var states = {};
+				states[Connection.UNKNOWN]  = 'Unknown connection';
+				states[Connection.ETHERNET] = 'Ethernet connection';
+				states[Connection.WIFI]     = 'WiFi connection';
+				states[Connection.CELL_2G]  = 'Cell 2G connection';
+				states[Connection.CELL_3G]  = 'Cell 3G connection';
+				states[Connection.CELL_4G]  = 'Cell 4G connection';
+				states[Connection.CELL]     = 'Cell generic connection';
+				states[Connection.NONE]     = 'No network connection';
+				var connect=states[networkState];
+				if(connect!='No network connection'){
+					$.ajax({
+						url:'http://recorridos.vallen.mx/sis/ListaParadas/index.asp',
+						data:{ID_USUARIO:ID_USUARIO,ID_RUTA:ID_RUTA},
+						type:'get',
+						dataType: 'jsonp',
+						callbackParameter: 'callback',
+						success: function(data){
+							$.each(data.datos, function(i,item){
+								var	TOTAL=item.TOTAL||0;
+								if(sessionStorage.getItem('CUANTOS')!=TOTAL){	
+									location.reload();
+								}
+							});
+						}
+					});
+				}
+			}
+			function datos(){
+				var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+				db.transaction(function (tx) {
+					tx.executeSql('SELECT * FROM PARADA WHERE ESTATUS_PARADA="Completada" OR ESTATUS_PARADA="Cancelada" OR ESTATUS_PARADA="En Ruta" ORDER BY id DESC', [], querySucc);
+				});	
+				db.transaction(function(tx){
+					tx.executeSql('SELECT * FROM PARADA WHERE ESTATUS_PARADA="Completada" OR ESTATUS_PARADA="Cancelada" ORDER BY id DESC', [], function(tx, results) {
+						val=results.rows.length;
+						if(val>0){
+							datos();
+						}else{
+							setTimeout("$('#contenido2').css('display','none')",3000);
+							if(sessionStorage.getItem('VAL')==1){
+								location.reload();
+								sessionStorage.setItem('VAL',0);
+							}
+						}
+					},null);
+				});
+			}
+			function datos2(){
+				var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+				db.transaction(function (tx) {
+					tx.executeSql('SELECT * FROM PARADA WHERE ESTATUS_PARADA="Completada" OR ESTATUS_PARADA="Cancelada" OR ESTATUS_PARADA="En Ruta" ORDER BY id DESC', [], querySucc);
+				});	
+				db.transaction(function(tx){
+					tx.executeSql('SELECT * FROM PARADA WHERE ESTATUS_PARADA="Completada" OR ESTATUS_PARADA="Cancelada" ORDER BY id DESC', [], function(tx, results) {
+						val=results.rows.length;
+						if(val>0){
+							datos2();
+						}else{ 
+						}
+					},null);
+				});
+			}
+			function initLocationP() {
+				//navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+				
+				navigator.geolocation.getCurrentPosition(checkConnect);
+			}
+			var connect;
+			function checkConnect() {
+				var networkState = navigator.connection.type;
+				var states = {};
+				states[Connection.UNKNOWN]  = 'Unknown connection';
+				states[Connection.ETHERNET] = 'Ethernet connection';
+				states[Connection.WIFI]     = 'WiFi connection';
+				states[Connection.CELL_2G]  = 'Cell 2G connection';
+				states[Connection.CELL_3G]  = 'Cell 3G connection';
+				states[Connection.CELL_4G]  = 'Cell 4G connection';
+				states[Connection.CELL]     = 'Cell generic connection';
+				states[Connection.NONE]     = 'No network connection';
+				var connect=states[networkState];
+				connecti=connect;
+				if(connect=='No network connection'){
+					var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+					db.transaction(function (tx) {
+						tx.executeSql('SELECT * FROM PARADA WHERE ESTATUS_PARADA="Programada" OR ESTATUS_PARADA="En Ruta" ORDER BY id ASC', [], querySuccess, errorCB);
+					});
+					$('#btn-right-panel').hide();
+					sessionStorage.setItem('VAL',1);
+				}
+			}
+			
+			
+		    //initLocationProcedure()//linea de prueba para cargar localicalización sin red	
+		    document.addEventListener("deviceready", onDeviceReady, false);
+		    function populateDB(tx) {
+		    	tx.executeSql('CREATE TABLE IF NOT EXISTS PARADA (id INTEGER PRIMARY KEY AUTOINCREMENT, ID_PARADA INTEGER,PIN_PARADA TEXT, REFERENCIA_PARADA TEXT, DESCRIPCION_PARADA TEXT,TIPO_PARADA TEXT,HORARIO_ENTREGA TEXT, ESTATUS_PARADA TEXT, DOMICILIO_PARADA TEXT,ESTADO_PARADA TEXT,CIUDAD_PARADA TEXT, COMENTARIO_FINAL TEXT, ID_CANCELACION INTEGER, REPROGRAMAR TEXT, FECHA_REPROGRAMAR TEXT, HORA_REPROGRAMAR TEXT, FECHA_FIN TEXT)');
+		    }
+	        // Query the database
+	        //
+	        function errorCB(err) {
+	        	alert("Error processing SQL: "+err.code);
+	        }
+	         // Cordova is ready
+	        //
+	        function onDeviceReady() {
+	        	var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        	db.transaction(populateDB, errorCB);
+	        }
+	        setInterval(function() {
+	        	initLocationProced();
+	        }, 10000);
+
+	        setInterval(function() {
+	        	initLocationProced3();
+	        }, 20000);
+	        
+	        function querySucc(tx, results) {
+	        	var len = results.rows.length; 
+	        	$('#contenido2').css('display','block');
+	        	for (var i = 0; i < len; i++) {
+	        		var user=sessionStorage.getItem('ID_USUARIO')||localStorage.getItem('ID_USUARIO');
+	        		var comentario=results.rows.item(i).COMENTARIO_FINAL;
+	        		var id=results.rows.item(i).ID_PARADA;
+	        		var fin=results.rows.item(i).FECHA_FIN;
+	        		sessionStorage.setItem('PARA',id);
+	        		var idcancel=results.rows.item(i).ID_CANCELACION;
+	        		var repro=results.rows.item(i).REPROGRAMAR;
+	        		var fechare=results.rows.item(i).FECHA_REPROGRAMAR||0;
+	        		var horare=results.rows.item(i).HORA_REPROGRAMAR||0;
+	        		Registro(id);
+	        		if(results.rows.item(i).ESTATUS_PARADA=='Completada'){
+	        			var positionTimer = navigator.geolocation.getCurrentPosition(
+	        				function (position) {
+	        					var RUTA_MANUAL="";
+	        					$.ajax({
+	        						url:'http://recorridos.vallen.mx/SIS/RutaCompletada/index2.asp',
+	        						data:{COMENTARIO_FINAL:comentario,ID_PARADA:id,LATITUD_FIN:position.coords.latitude,LONGITUD_FIN:position.coords.longitude,RUTA_MANUAL:RUTA_MANUAL,FECHA_FIN:fin},
+	        						type:'get',
+	        						dataType: 'jsonp',
+	        						callbackParameter: 'callback',
+	        						success: function(data){
+	        						}
+	        					});
+	        					var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        					db.transaction(function(tx){
+	        						tx.executeSql('DELETE FROM PARADA WHERE ID_PARADA='+id);	
+	        					});          
+	        				}); 
+	        		}
+	        		if(results.rows.item(i).ESTATUS_PARADA=='Cancelada'){
+	        			var positionTimer = navigator.geolocation.getCurrentPosition(
+	        				function (position) {
+	        					$.ajax({	
+	        						url:'http://recorridos.vallen.mx/sis/RutaNoCompletada/index2.asp',
+	        						data:{ID_USUARIO:user,COMENTARIO_FINAL:comentario,
+	        							ID_PARADA:id,ID_CANCELACION:idcancel,
+	        							REPROGRAMAR:repro,FECHA_REPROGRAMAR:fechare,
+	        							HORA_REPROGRAMAR:horare,LATITUD_FIN:position.coords.latitude,
+	        							LONGITUD_FIN:position.coords.longitude,FECHA_FIN:fin},
+	        							type:'get',		
+	        							dataType: 'jsonp',
+	        							callbackParameter: 'callback',
+	        							success: function(data){
+	        							}
+	        						});
+	        					var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        					db.transaction(function(tx){
+	        						tx.executeSql('DELETE FROM PARADA WHERE ID_PARADA='+id);	
+	        					});
+	        				}); 
+	        		}
+	        		if(results.rows.item(i).ESTATUS_PARADA=='En Ruta'){
+	        			var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        			db.transaction(function(tx){
+	        				tx.executeSql('SELECT * FROM PARADA_T WHERE ID_PARADA= '+id, [], function(tx, results) {
+	        					var val2=results.rows.length;
+	        					for (var j = 0; j < val2; j++){
+	        						var obj=String(results.rows.item(j).HORARIO_INICIO);
+	        						$.ajax({
+	        							url:'http://recorridos.vallen.mx/SIS/IniciarRecorrido/index2.asp',
+	        							data:{ID_PARADA:id,LATITUD_INICIO:"",LONGITUD_INICIO:"",FECHA_INICIO:obj},
+	        							type:'get',
+	        							dataType: 'jsonp',
+	        							callbackParameter: 'callback',
+	        							success: function(data){
+	        							}
+	        						});
+	        					}
+	        				},null);	
+	        			});
+	        		}	
+	        	}   
+	        }
+	        function querySuccess(tx, results) {
+	        	var len = results.rows.length;
+	        	var DOMICILIO_PARADA;
+	        	var CIUDAD_PARADA;
+	        	var ESTADO_PARADA;
+	        	var f = new Date();
+	        	var fecha=f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear();
+	        	var TITULOS='';
+	        	TITULOS+="	<div class='ui-grid-b title-header'>"
+	        	TITULOS+="		<div class='ui-block-a small'>Actividades ("+len+")</div>"
+	        	TITULOS+="		<div class='ui-block-b small text-center'></div>"	
+	        	TITULOS+="		<div class='ui-block-c small'>"+fecha+"</div>"
+	        	TITULOS+="	</div>"
+	        	$("#TOTAL_RUTAS").html(TITULOS);
+	        	for (var i = 0; i < len; i++) {
+	        		var li='';
+	        		li+="<li data-theme='e'>"
+	        		li+="	<a href='javascript:DETALLES("+results.rows.item(i).ID_PARADA+");' rel='external' id='PARADA_"+results.rows.item(i).ID_PARADA+"' class='ui-btn ui-btn-e ui-btn-icon-right ui-icon-carat-r'>"
+	        		li+="		<div class='col-2 "+results.rows.item(i).PIN_PARADA+"'><i class='fa fa-map-marker'></i></div>"
+	        		li+="		<div class='col-10'>"
+	        		li+="			<h2>"+results.rows.item(i).REFERENCIA_PARADA+"</h2>"
+	        		li+="			<p>"+results.rows.item(i).DESCRIPCION_PARADA+"</p>"
+	        		li+="			<div class='details-list'>"
+	        		li+="				<p><i class='fa fa-truck'></i>"+results.rows.item(i).TIPO_PARADA+"</p>"
+	        		if(results.rows.item(i).ESTATUS_PARADA=="En Ruta"){
+	        			li+="				<p style='color:red;'><i class='fa fa-circle-o'></i>"+results.rows.item(i).ESTATUS_PARADA+"</p>"
+	        		}else{
+	        			li+="				<p><i class='fa fa-circle-o'></i>"+results.rows.item(i).ESTATUS_PARADA+"</p>"
+	        		}
+
+	        		li+="				<p><i class='fa fa-clock-o'></i>"+results.rows.item(i).HORARIO_ENTREGA+"</p>"
+	        		li+="			</div>"
+	        		li+="		</div>"
+	        		li+="	</a>"
+	        		li+="</li>"
+	        		$("#RUTAS").append(li);  
+	        	}
+	        }
+	        $(function (){
+	        	ID_USUARIO=sessionStorage.getItem('ID_USUARIO')||localStorage.getItem('ID_USUARIO');
+	        	ID_RUTA=sessionStorage.getItem('ID_RUTA')||localStorage.getItem('ID_RUTA');
+	        	var VER_REGID=sessionStorage.getItem('REGID')||localStorage.getItem('REGID');
+	        	$("#ID_REGID").html("<i class='fa fa-mobile-phone'></i>ID: "+VER_REGID.substr(VER_REGID.length - 7));
+	        	if(ID_USUARIO==0){
+	        		top.location="index.html"
+	        	}else{
+	        		if(connecti!="No network connection"){
+	        			ListaParadas(ID_USUARIO);
+	        			ListaNotificaciones(ID_USUARIO);
+	        		}
+	        	};
+	        });
+	        function Registro(id){
+	        	var ID_PARAD=id;	
+	        	var ESTATUS="0";
+	        	var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        	db.transaction(function(tx){
+	        		tx.executeSql('SELECT * FROM REGISTRAR_UBICACIONES WHERE ID_PARADA= '+ID_PARAD+' ORDER BY ID ASC', [], function(tx, results) {
+	        			val=results.rows.length;
+	        			for (var i = 0; i < val; i++){
+	        				var latitud=results.rows.item(i).LATITUD_UBICACION; 
+	        				var longitud=results.rows.item(i).LONGITUD_UBICACION;
+	        				$.ajax({
+	        					url:'http://recorridos.vallen.mx/sis/ListaParadas/index.asp',
+	        					data:{ID_USUARIO:sessionStorage.getItem('ID_USUARIO'),ID_RUTA:sessionStorage.getItem('ID_RUTA')},
+	        					type:'get',
+	        					dataType: 'jsonp',
+	        					callbackParameter: 'callback',
+	        					success: function(data){
+	        						$.each(data.datos, function(i,item){
+	        							var ESTADO_CONSULTA=item.ESTADO_CONSULTA||'';
+	        							if (ESTADO_CONSULTA=='OK'){	
+	        								var	paradas=item.paradas||0;
+	        								$.each(paradas, function(f,itemb){
+	        									var	ID_PARADA=itemb.ID_PARADA||0;
+	        									var	ESTATUS_PARADA=itemb.ESTATUS_PARADA||'Sin definir';	
+	        									if(ID_PARADA==ID_PARAD){
+	        										ESTATUS=ESTATUS_PARADA;
+	        										if(i==0 && ESTATUS=="Programada"){
+	        											var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        											db.transaction(function(tx){
+	        												tx.executeSql('SELECT * FROM PARADA_T WHERE ID_PARADA= '+ID_PARAD, [], function(tx, results) {
+	        													var val2=results.rows.length;
+	        													for (var j = 0; j < val2; j++){
+	        														var obj=String(results.rows.item(j).HORARIO_INICIO);
+	        														$.ajax({
+	        															url:'http://recorridos.vallen.mx/SIS/IniciarRecorrido/index3.asp',
+	        															data:{ID_PARADA:ID_PARAD,LATITUD_INICIO:latitud,LONGITUD_INICIO:longitud,FECHA_INICIO:obj},
+	        															type:'get',
+	        															dataType: 'jsonp',
+	        															callbackParameter: 'callback',
+	        															success: function(data){
+	        															}
+	        														});
+	        													}
+	        												},null);	
+	        											});	
+	        										}
+	        									}
+
+	        								});
+	        							};
+	        						})	
+	        					}
+	        				});
+	        				$.ajax({
+	        					url:'http://recorridos.vallen.mx/SIS/ReportarUbicacion/index.asp',
+	        					data:{ID_PARADA:ID_PARAD,latitude:latitud,longitude:longitud},
+	        					type:'get',
+	        					dataType: 'jsonp',
+	        					callbackParameter: 'callback',
+	        					success: function(data){
+	        					}
+	        				});
+	        				var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        				db.transaction(function(tx){
+	        					tx.executeSql('DELETE FROM REGISTRAR_UBICACIONES WHERE ID_PARADA='+ID_PARAD+' AND LATITUD_UBICACION="'+latitud+'"');	
+	        				});
+	        			}
+	        		},null);	
+	        	});
+	        	db.transaction(function(tx){
+	        		tx.executeSql('SELECT * FROM REGISTRAR_UBICACIONES WHERE ID_PARADA='+ID_PARAD+' ORDER BY id ASC', [], function(tx, results) {
+	        			val=results.rows.length;
+	        			if(val>0){
+	        				Registro();
+	        			}
+	        		},null);
+	        	});
+	        	conts=1;
+	        }
+	        function ListaParadas(ID_USUARIO){
+	        	$.ajax({
+	        		url:'http://recorridos.vallen.mx/sis/ListaParadas/index.asp',
+	        		data:{ID_USUARIO:ID_USUARIO,ID_RUTA:ID_RUTA},
+	        		type:'get',
+	        		dataType: 'jsonp',
+	        		callbackParameter: 'callback',
+	        		success: function(data){
+	        			$.each(data.datos, function(i,item){
+	        				var ESTADO_CONSULTA=item.ESTADO_CONSULTA||'';
+	        				var FECHA_RUTA=item.FECHA_RUTA||'';
+	        				var	TOTAL=item.TOTAL||0;
+	        				var	NOMBRE_UNIDAD=item.NOMBRE_UNIDAD||'';
+	        				var	MENSAJE=item.MENSAJE||'';
+	        				var TITULOS='';
+	        				var sql1='';
+	        				sessionStorage.setItem('CUANTOS',TOTAL);
+	        				if (ESTADO_CONSULTA=='OK'){							
+	        					TITULOS+="	<div class='ui-grid-b title-header'>"
+	        					TITULOS+="		<div class='ui-block-a small'>Actividades ("+TOTAL+")</div>"
+	        					TITULOS+="		<div class='ui-block-b small text-center'></div>"	
+	        					TITULOS+="		<div class='ui-block-c small'>"+FECHA_RUTA+"</div>"
+	        					TITULOS+="	</div>"
+	        					var li = '';
+	        					var	paradas=item.paradas||0;
+	        					$.each(paradas, function(f,itemb){
+	        						var	ID_PARADA=itemb.ID_PARADA||0;
+	        						var id=ID_PARADA;
+	        						var DOMICILIO="";
+	        						var ESTADO="";
+	        						var CIUDAD="";
+	        						$.ajax({
+	        							url:'http://recorridos.vallen.mx/SIS/DetallesParada/index.asp',
+	        							data:{ID_PARADA:ID_PARADA},
+	        							type:'get',
+	        							dataType: 'jsonp',
+	        							callbackParameter: 'callback',
+	        							success: function(data){
+	        								$.each(data.datos, function(i,item){
+	        									var dom=item.DOMICILIO;
+	        									var est=item.ESTADO_PARADA;
+	        									var ciu=item.CIUDAD_PARADA;
+	        									var val=1;
+	        									var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        									db.transaction(function(tx){
+	        										tx.executeSql('SELECT * FROM PARADA WHERE ID_PARADA= '+ID_PARADA+'', [], function(tx, results) {
+	        											val=results.rows.length;
+	        											if(val==0){
+	        												db.transaction(function(tx){
+	        													tx.executeSql('INSERT INTO PARADA (ID_PARADA,PIN_PARADA,REFERENCIA_PARADA,DESCRIPCION_PARADA,TIPO_PARADA,HORARIO_ENTREGA,ESTATUS_PARADA,DOMICILIO_PARADA,ESTADO_PARADA,CIUDAD_PARADA) VALUES ('+ID_PARADA+',"'+PIN_PARADA+'","'+REFERENCIA_PARADA+'","'+DESCRIPCION_PARADA+'","'+TIPO_PARADA+'","'+HORARIO_ENTREGA+'","'+ESTATUS_PARADA+'","'+dom+'","'+est+'","'+ciu+'")');
+	        												});
+	        												db.transaction(function(tx){
+	        													tx.executeSql('INSERT INTO PARADA_T (ID_PARADA,PIN_PARADA,REFERENCIA_PARADA,DESCRIPCION_PARADA,TIPO_PARADA) VALUES ('+ID_PARADA+',"'+PIN_PARADA+'","'+REFERENCIA_PARADA+'","'+DESCRIPCION_PARADA+'","'+TIPO_PARADA+'")');
+	        												});
+	        											}
+	        										},null);
+	        									});
+	        								})	
+	        							}
+	        						});
+	        						var dom=sessionStorage.getItem('DOMICILIO');
+	        						var est=sessionStorage.getItem('ESTADO');
+	        						var ciu=sessionStorage.getItem('CIUDAD');
+	        						var	REFERENCIA_PARADA=itemb.REFERENCIA_PARADA||'';
+	        						var	DESCRIPCION_PARADA=itemb.DESCRIPCION_PARADA||'';
+	        						var	ESTATUS_PARADA=itemb.ESTATUS_PARADA||'Sin definir';
+	        						var	HORARIO_ENTREGA=itemb.HORARIO_ENTREGA||'Sin definir';
+	        						var	PIN_PARADA=itemb.PIN_PARADA||'pin-list';
+	        						var	HORARIO_ENTREGA=itemb.HORARIO_ENTREGA||'Sin definir';
+	        						var	TIPO_PARADA=itemb.TIPO_PARADA||'Sin definir';
+	        						var	LAT=itemb.LAT||'Sin definir';
+	        						var	LON=itemb.LON||'Sin definir';
+	        						li+="<li data-theme='e'>"
+	        						li+="	<a href='javascript:DETALLES("+ID_PARADA+");' rel='external' id='PARADA_"+ID_PARADA+"' class='ui-btn ui-btn-e ui-btn-icon-right ui-icon-carat-r'>"
+	        						li+="		<div class='col-2 "+PIN_PARADA+"'><i class='fa fa-map-marker'></i></div>"
+	        						li+="		<div class='col-10'>"
+	        						li+="			<h2>"+REFERENCIA_PARADA+"</h2>"
+	        						li+="			<p>"+DESCRIPCION_PARADA+"</p>"
+	        						li+="			<div class='details-list'>"
+	        						li+="				<p><i class='fa fa-truck'></i>"+TIPO_PARADA+"</p>"
+	        						li+="				<p><i class='fa fa-clock-o'></i>"+HORARIO_ENTREGA+"</p>"
+	        						if(ESTATUS_PARADA=="En Ruta"){
+	        							li+="				<p style='color:red;'><i class='fa fa-circle-o'></i>"+ESTATUS_PARADA+"</p>"
+	        						}else{
+	        							li+="				<p><i class='fa fa-circle-o'></i>"+ESTATUS_PARADA+"</p>"
+	        						}
+	        						li+="			</div>"
+	        						li+="		</div>"
+	        						li+="	</a>"
+	        						li+="</li>"
+	        						var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	        						db.transaction(function(tx){
+	        							tx.executeSql('UPDATE PARADA SET ESTATUS_PARADA= "'+ESTATUS_PARADA+'" WHERE ID_PARADA= '+ID_PARADA);
+	        						});
+	        					});
+$("#TOTAL_RUTAS").html(TITULOS);
+$("#RUTAS").append(li);
+};
+if (ESTADO_CONSULTA=='NO'){
+	TITULOS+="	<div class='ui-grid-b title-header'>"
+	TITULOS+="		<div class='ui-block-a small'></div>"
+	TITULOS+="		<div class='ui-block-c small'>"+MENSAJE+"</div>"
+	TITULOS+="		<div class='ui-block-c small'></div>"
+	TITULOS+="	</div>"
+	$("#TOTAL_RUTAS").html(TITULOS);
+	$("#RUTAS").remove();
+}
+if (ESTADO_CONSULTA=='ERROR'){
+	TITULOS+="	<div class='ui-grid-b title-header'>"
+	TITULOS+="		<div class='ui-block-a small'></div>"
+	TITULOS+="		<div class='ui-block-c small'>"+MENSAJE+"</div>"
+	TITULOS+="		<div class='ui-block-c small'></div>"
+	TITULOS+="	</div>"
+	$("#TOTAL_RUTAS").html(TITULOS);
+	$("#RUTAS").remove();
+}
+})	
+}
+});
+};
+function DETALLES(ID_PARADA){
+	sessionStorage.setItem("ID_PARADA",ID_PARADA)
+	if(connecti=="No network connection"){
+		top.location="paradaoff.html"
+	}else{
+		top.location="parada.html"
+	}
+};
+$("#btn-right-panel").click(function(){
+	$("#numNotifications").fadeOut();
+	setTimeout(function () {
+		$("#numNotifications").html('');
+	}, 2000);
+});
+$(window).load(function(){
+	initLocationP();
+	setTimeout(function(){ 
+		$('#preloader').fadeOut('slow');
+	}, 2000);
+});
+</script>
+
+</body>
+
+
+
+</html>
