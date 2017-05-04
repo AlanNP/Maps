@@ -57,9 +57,9 @@ function initLocationProcedure() {
 		$("#avisoUbicacion").popup('open');
 		$("#botones").hide();
 	}
-	setInterval(function() {
-		GuardarMovimientos();
-	}, 3000);
+    
+    var LATITUDE_ANTERIOR='0';
+	var LONGITUDE_ANTERIOR='0';
 	function GuardarMovimientos(){
 		currentPositionMarker.setIcon(image);
 
@@ -67,9 +67,10 @@ function initLocationProcedure() {
 			var positionTimer = navigator.geolocation.getCurrentPosition(
 				function (position) {
 					if (LATITUDE_ANTERIOR!=position.coords.latitude && LONGITUDE_ANTERIOR!=position.coords.longitude){
-
 						currentPositionMarker.setIcon(image_send2);
-						
+						currentPositionMarker.setIcon(image);
+                        LATITUDE_ANTERIOR=position.coords.latitude;
+						LONGITUDE_ANTERIOR=position.coords.longitude;
 					}else{
 						currentPositionMarker.setIcon(image);
 					}
