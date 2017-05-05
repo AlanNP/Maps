@@ -5,18 +5,32 @@ var LAT_ORIGEN = "";
 var LON_ORIGEN = "";
 var map;
 var	currentPositionMarker;	
-
+var styles = [
+	    {
+	      featureType: "poi.business",
+	      elementType: "labels",
+	      stylers: [
+	        { visibility: "off" }
+	      ]
+	    }
+	  ];
+	  
 function displayAndWatch(position) {
 	setCurrentPosition(position);
 	watchCurrentPosition();
 }
 
 function setCurrentPosition(pos) {
+	var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});  
+
 	map = new google.maps.Map(document.getElementById('map-canvas'), {
 		center: {lat: pos.coords.latitude, lng:pos.coords.longitude},
 		scrollwheel: false,
 		zoom: 13
 	});
+
+    map.mapTypes.set('map_style', styledMap);
+    map.setMapTypeId('map_style');
 
 	currentPositionMarker = new google.maps.Marker({
 		map: map,
