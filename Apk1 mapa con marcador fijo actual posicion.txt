@@ -1,3 +1,5 @@
 Apk1 mapa con marcador fijo actual posicion
 Apk2 mapa con marcador cambiando depende de la posicion
 Apk3 mapa con marcador enviando localización y botones para mandar datos al servidor
+
+https://productforums.google.com/forum/#!topic/maps-es/L6S1Li8HAcI;context-place=forum/maps-es

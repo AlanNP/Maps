@@ -14,7 +14,7 @@ var styles = [
 	      ]
 	    }
 	  ];
-	  
+
 function displayAndWatch(position) {
 	setCurrentPosition(position);
 	watchCurrentPosition();
@@ -26,7 +26,10 @@ function setCurrentPosition(pos) {
 	map = new google.maps.Map(document.getElementById('map-canvas'), {
 		center: {lat: pos.coords.latitude, lng:pos.coords.longitude},
 		scrollwheel: false,
-		zoom: 13
+		zoom: 13,
+		navigationControl: false,
+		scaleControl: false ,
+		streetViewControl: false
 	});
 
     map.mapTypes.set('map_style', styledMap);
@@ -96,7 +99,7 @@ function initLocationProcedure() {
 					function (position) {
 						if (LATITUDE_ANTERIOR!=position.coords.latitude && LONGITUDE_ANTERIOR!=position.coords.longitude){
 							$.ajax({
-								url:'http://recorridos.vallen.mx/SIS/ReportarUbicacion/index.asp',
+								url:'http://recorridos.vallen.mx/SIS/ReportarUbicacion/index2.asp',
 								data:{ID_PARADA:12516,latitude:position.coords.latitude,longitude:position.coords.longitude},
 								type:'get',
 								dataType: 'jsonp',
