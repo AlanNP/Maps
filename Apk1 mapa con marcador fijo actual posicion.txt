@@ -1,2 +1,3 @@
 Apk1 mapa con marcador fijo actual posicion
 Apk2 mapa con marcador cambiando depende de la posicion
+Apk3 mapa con marcador enviando localización y botones para mandar datos al servidor
