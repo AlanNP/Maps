@@ -26,19 +26,101 @@
 
 <section data-role="page" class="h100">
 	<div class="map-route">
+		<a href="#popDetalles" id="boton" data-rel="popup" class="btn-pop pdetalles" data-transition="pop"><i class="fa fa-info"></i></a>
+
+		<a href="#popIndicaciones" id="boton" data-rel="popup" class="btn-pop pindicaciones" data-transition="pop"><i class="fa fa-map-signs"></i></a>
 
 		<div id="map-canvas"></div>
 
-		<div class="footer footer-hidden" id="botones">
+		<div class="footer " id="botones">
 
 			<a href="" class="btn-play" rel="external" data-role="button" data-theme="b" id="startroute">Iniciar ruta <i class="fa fa-play-circle"></i></a>
+
+			<div class="ui-grid-a mensajes-tareas" id="mensajesComplete">
+				<div class="ui-block-a">
+					<a href="javascript:btnCompletada();" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-d" data-transition="pop">Completado</a>
+				</div>
+				<div class="ui-block-b">
+					<a href="#popupNoCompletada" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-c" data-transition="pop">No Completado</a>
+				</div>
+			</div>
 
 		</div>
 	</div>
 
-	
+	<div data-role="popup" id="popDetalles">
+		<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+		<div class="info-detail" id="INFO_PARADA">
 
-	
+		</div>
+	</div>
+
+	<div data-role="popup" id="popIndicaciones">
+		<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+		<div class="info-detail">            
+			<div id="right-panel"></div>
+		</div>
+	</div>
+
+	<div data-role="popup" id="popupCompletada" data-theme="d" class="ui-corner-all">
+		<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-d ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+		<form id="comentario-final-form" name="comentario-final-form" action="">
+			<div style="padding:10px 20px;">
+				<h3>Comentarios</h3>
+				<textarea name="COMENTARIO_COMPLETADA_FINAL" id="COMENTARIO_COMPLETADA_FINAL" cols="30" rows="10"></textarea>
+				<a id="btn_COMENTARIO_FINAL" class="ui-btn ui-corner-all ui-shadow ui-btn-d ui-btn-icon-left ui-icon-check" href="javascript:ComentarioFinal();" rel="external" data-role="button">Guardar</a>
+			</div>
+		</form>
+	</div>
+
+	<div data-role="popup" id="popupNoCompletada" data-theme="c" class="ui-corner-all" >
+		<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-c ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+		<form>
+			<div style="padding:10px 20px;">
+				<select name="MotivoCancelacion" id="MotivoCancelacion">
+					<option value="" selected>Motivo de cancelación</option>
+					<option value="1">Error en dirección de entrega</option>
+					<option value="2">No es el material que el Cliente requiere</option>
+					<option value="3">Mal surtido (Almacen)</option>
+					<option value="4">Horarios de recibo de Cliente</option>
+					<option value="5">Días de recibo de Cliente</option>
+					<option value="6">Material duplicado</option>
+					<option value="7">Error de Facturacion</option>
+					<option value="8">Error en Orden de Compra</option>
+					<option value="9">Error de entrega de Chofer</option>
+					<option value="10">Material incompleto </option>
+					<option value="11">Material en mal estado</option>
+					<option value="12">Material caduco</option>
+				</select>
+
+
+				<label for="REPROGRAMAR">Reprogramar</label>
+				<input type="checkbox" name="REPROGRAMAR" id="REPROGRAMAR">
+
+
+				<div class="ui-grid-a" id="GRUPO_FECHA_REPROGRAMAR" style="display:none">
+					<div class="ui-block-a">
+						<label for="FECHA_REPROGRAMAR" data-icon="calendar" data-iconpos="left" data-mini="true" data-inline="true" class="ui-link ui-btn ui-icon-calendar ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all top6" role="label">Fecha</label>
+					</div>
+					<div class="ui-block-b">
+						<input type="date"  data-inline="true" name="FECHA_REPROGRAMAR" id="FECHA_REPROGRAMAR" placeholder="dd/mm/aaaa" value="">
+					</div>
+				</div>
+
+				<div class="ui-grid-a" id="GRUPO_HORA_REPROGRAMAR" style="display:none">
+					<div class="ui-block-a">
+						<label for="HORA_REPROGRAMAR" data-icon="clock" data-iconpos="left" data-mini="true" data-inline="true" class="ui-link ui-btn ui-icon-clock ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all" role="label top6">Hora</label>
+					</div>
+					<div class="ui-block-b">
+						<input type="time" data-inline="true" name="HORA_REPROGRAMAR" id="HORA_REPROGRAMAR" placeholder="dd/mm/aaaa" value="">
+					</div>
+				</div>
+
+				<textarea name="COMENTARIO_NO_COMPLETADA_FINAL" id="COMENTARIO_NO_COMPLETADA_FINAL" cols="30" rows="10" placeholder="Comentarios de la Cancelación"></textarea>
+				<a id="btn_COMENTARIO_NO_COMPLETADA_FINAL" class="ui-btn ui-corner-all ui-shadow ui-btn-c ui-btn-icon-left ui-icon-check" href="javascript:ComentarioNoFinal();" rel="external">Guardar</a>
+			</div>
+		</form>
+	</div>
 
 </section>
 
@@ -50,8 +132,36 @@ async defer></script>
 <script src="js/RUTA_COMPLETADA/index.js"></script>
 <script src="js/RUTA_NO_COMPLETADA/index.js"></script>ñ
 <script>
-$('#preloader').fadeOut('slow');
+	if(sessionStorage.getItem('ESTATUS_PARADA')=="En Ruta"){
+		$('#startroute').css('display','none');
+		$('#mensajesComplete').css('display','block');
+	}
+	$('#startroute').on('click', function(){
+		var r = confirm("Confirma el inicio de esta tarea.");
+		if (r == true) {
+			$('#mensajesComplete').css('display','block');
+			$('#startroute').css('display','none');
+			IniciarRecorrido();
+		};
 
+	});
+	function btnCompletada(){
+		var rutamanual = sessionStorage.getItem('RutaManual')||0;
+		if(rutamanual==1){
+			$("#avisoConfirmacionRutaManual").popup('open');
+		}else{
+			$("#popupCompletada").popup('open');
+		}
+	}
+	$('#REPROGRAMAR').on('click', function(){
+		if($("#REPROGRAMAR").is(':checked')) {  
+			$('#GRUPO_FECHA_REPROGRAMAR').css('display','block');
+			$('#GRUPO_HORA_REPROGRAMAR').css('display','block');
+		}else{
+			$('#GRUPO_FECHA_REPROGRAMAR').css('display','none');
+			$('#GRUPO_HORA_REPROGRAMAR').css('display','none');
+		}
+	});
 </script>
 </body>
 </html>
