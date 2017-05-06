@@ -5,17 +5,16 @@ var LAT_ORIGEN = "";
 var LON_ORIGEN = "";
 var map;
 var	currentPositionMarker;	
-var map = $("#map-canvas");
 var styles = [
-{
-	featureType: "poi.business",
-	elementType: "labels",
-	stylers: [
-	{ visibility: "off" }
-	]
-}
-];
-
+	    {
+	      featureType: "poi.business",
+	      elementType: "labels",
+	      stylers: [
+	        { visibility: "off" }
+	      ]
+	    }
+	  ];
+	  
 function displayAndWatch(position) {
 	setCurrentPosition(position);
 	watchCurrentPosition();
@@ -24,54 +23,57 @@ function displayAndWatch(position) {
 function setCurrentPosition(pos) {
 	var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});  
 
-	$('#preloader').fadeOut('slow');
-	
-	var gmCenterAddress = map.attr("data-address");
-	var gmMarkerAddress = map.attr("data-address");
-	map.gmap3({
-		zoom: 3,
-		mapTypeId : google.maps.MapTypeId.ROADMAP
-	})
-	.route({
-		origin:"irak 304, tampico",
-		destination:"avenida universidad 906,tampico",
-		travelMode: google.maps.DirectionsTravelMode.DRIVING
-	})
-	.directionsrenderer(function (results) {
-		if (results) {
-			return {
-				panel: "#box",
-				directions: results
-			}
-		}
+	map = new google.maps.Map(document.getElementById('map-canvas'), {
+		center: {lat: pos.coords.latitude, lng:pos.coords.longitude},
+		scrollwheel: false,
+		zoom: 13,
+		disableDefaultUI: true
 	});
 
-	currentPositionMarker= map.gmap3({})
-	.marker({
-		position: [pos.coords.latitude,pos.coords.longitude],
+    map.mapTypes.set('map_style', styledMap);
+    map.setMapTypeId('map_style');
+
+	currentPositionMarker = new google.maps.Marker({
+		map: map,
+		position: new google.maps.LatLng(
+			pos.coords.latitude,
+			pos.coords.longitude
+			),
+		title: "posición",
 		icon: image
 	});
-	
-$('#map-canvas').gmap3({
-      action:'clear', 
-      marker:{
-         tag:'1',
-         name:'marker'}
-});
 
+
+	var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:false,polylineOptions:{strokeColor: '#660FFC'}});
+	var directionsService = new google.maps.DirectionsService();
+	var request = {
+		origin:"22.215998, -97.858238",
+		destination:"22.264226, -97.786010",
+		travelMode: google.maps.DirectionsTravelMode["DRIVING"],
+		unitSystem: google.maps.DirectionsUnitSystem["METRIC"],
+		provideRouteAlternatives: false
+	}
+	directionsService.route(request, function(response, status) {
+		if (status == google.maps.DirectionsStatus.OK) {
+			directionsDisplay.setMap(map);
+			directionsDisplay.setPanel($("#panel_ruta").get(0));
+			directionsDisplay.setDirections(response);
+		} else {
+		}
+	});
 }
 function watchCurrentPosition() {
 	var positionTimer = navigator.geolocation.watchPosition(
 		function (position) {
-			setMarkerPosition(position);
+			setMarkerPosition(currentPositionMarker,position);
 		});
 }
-function setMarkerPosition(position) {
-	map.gmap3({})
-	.marker({
-		position: [position.coords.latitude,position.coords.longitude],
-		icon: image
-	});
+function setMarkerPosition(marker, position) {
+	marker.setPosition(
+		new google.maps.LatLng(
+			position.coords.latitude,
+			position.coords.longitude)
+		);
 }
 function initLocationProcedure() {
 	navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
@@ -95,7 +97,7 @@ function initLocationProcedure() {
 					function (position) {
 						if (LATITUDE_ANTERIOR!=position.coords.latitude && LONGITUDE_ANTERIOR!=position.coords.longitude){
 							$.ajax({
-								url:'http://recorridos.vallen.mx/SIS/ReportarUbicacion/index2.asp',
+								url:'http://recorridos.vallen.mx/SIS/ReportarUbicacion/index.asp',
 								data:{ID_PARADA:12516,latitude:position.coords.latitude,longitude:position.coords.longitude},
 								type:'get',
 								dataType: 'jsonp',
@@ -135,7 +137,7 @@ function initLocationProcedure() {
 								var ESTADO_CONSULTA=itemA.ESTADO_CONSULTA||'';
 								ESTATUS_PARADA=itemA.ESTATUS_PARADA||'Estatus sin definir';
 								sessionStorage.setItem("ESTATUS_PARADA",ESTATUS_PARADA);
-
+                                
 								setInterval(function() {
 									GuardarMovimientos();
 								}, 3000);	
