@@ -182,20 +182,20 @@
 	              });
 	          }, 3000);
 	              setInterval(function() {
-	              	var valor=cordova.plugins.backgroundMode.isActive();
-	              	if(valor){
-	              		alert("hola");
-	              	}else{
-	              		setTimeout(function(){
-	              			alert("adios");
-	              		},5000);
-	              	}
+
 	              		    /**
 						    * This callback will be executed every time a geolocation is recorded in the background.
 						    */
 						    var callbackFn = function(location) {
 						    	
-						    	
+						    	var valor=cordova.plugins.backgroundMode.isActive();
+	              	if(valor){
+	              		alert("hola "+location.latitude+" "+location.longitude);
+	              	}else{
+	              		setTimeout(function(){
+	              			alert("adios");
+	              		},5000);
+	              	}
 						        // Do your HTTP request here to POST location to your server. 
 						        // jQuery.post(url, JSON.stringify(location)); 
 
