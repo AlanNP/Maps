@@ -176,6 +176,7 @@
 document.getElementById("registro").innerHTML = "activo"; 
 			  }else{
 			  	cordova.plugins.backgroundMode.disable();
+			  	backgroundGeolocation.stop(); 
 			  }
 
               cordova.plugins.backgroundMode.onactivate = function () {
