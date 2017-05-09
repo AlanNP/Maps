@@ -171,14 +171,7 @@
               // Enable background mode
               cordova.plugins.backgroundMode.enable();
               // Called when background mode has been activated
-              var valor=cordova.plugins.backgroundMode.isActive();
-			  if(valor){
-alert("hola");
-			  }else{
-			  	setTimeout(function(){
-			  	alert("adios");
-			    },5000);
-			  }
+
 
               cordova.plugins.backgroundMode.onactivate = function () {
 	              // Modify the currently displayed notification
@@ -188,7 +181,15 @@ alert("hola");
 	              	title: 'Ejecutándose en segundo plano.'
 	              });
 	          }, 3000);
-	               setInterval(function() {
+	              setInterval(function() {
+	              	var valor=cordova.plugins.backgroundMode.isActive();
+	              	if(valor){
+	              		alert("hola");
+	              	}else{
+	              		setTimeout(function(){
+	              			alert("adios");
+	              		},5000);
+	              	}
 	              		    /**
 						    * This callback will be executed every time a geolocation is recorded in the background.
 						    */
