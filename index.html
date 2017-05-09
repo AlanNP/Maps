@@ -173,10 +173,11 @@
               // Called when background mode has been activated
               var valor=cordova.plugins.backgroundMode.isActive();
 			  if(valor){
-document.getElementById("registro").innerHTML = "activo"; 
+alert("hola");
 			  }else{
-			  	cordova.plugins.backgroundMode.disable();
-			  	backgroundGeolocation.stop(); 
+			  	setTimeout(function(){
+			  	alert("adios");
+			    },5000);
 			  }
 
               cordova.plugins.backgroundMode.onactivate = function () {
