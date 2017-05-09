@@ -42,6 +42,7 @@
 				</div>
 			</div>
 
+			<p id="registro"></p>
 		</div>
 	</div>
 
@@ -115,6 +116,7 @@
 
 				<textarea name="COMENTARIO_NO_COMPLETADA_FINAL" id="COMENTARIO_NO_COMPLETADA_FINAL" cols="30" rows="10" placeholder="Comentarios de la Cancelación"></textarea>
 				<a id="btn_COMENTARIO_NO_COMPLETADA_FINAL" class="ui-btn ui-corner-all ui-shadow ui-btn-c ui-btn-icon-left ui-icon-check" href="javascript:ComentarioNoFinal();" rel="external">Guardar</a>
+
 			</div>
 		</form>
 	</div>
@@ -177,13 +179,16 @@
 	              	title: 'Ejecutándose en segundo plano.'
 	              });
 	          }, 3000);
-	                $(function() {
+	              $(function() {
 	              		    /**
 						    * This callback will be executed every time a geolocation is recorded in the background.
 						    */
 						    var callbackFn = function(location) {
-						    	alert(location.latitude + ',' + location.longitude);
+						    	var valor=cordova.plugins.backgroundMode.isActive();
+						    	if(valor){
 
+						    		document.getElementById("registro").innerHTML = location.latitude+", "+location.longitude; 
+						    	}
 						        // Do your HTTP request here to POST location to your server. 
 						        // jQuery.post(url, JSON.stringify(location)); 
 
@@ -212,7 +217,7 @@
 
 						    // If you wish to turn OFF background-tracking, call the #stop method. 
 						    // backgroundGeolocation.stop(); 
-					});
+						});
 	          }
 	      }
 	  </script>
