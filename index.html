@@ -183,26 +183,27 @@
 	          }, 3000);
 	              setInterval(function() {
 
-	              	var callbackFn = function(location) {
-
-	              		alert("hola "+location.latitude+" "+location.longitude);
-
-	              		backgroundGeolocation.finish();
-	              	};
-
-	              	var failureFn = function(error) {
-	              		alert('BackgroundGeolocation error');
-	              	};
-
-	              	backgroundGeolocation.configure(callbackFn, failureFn, {
-	              		desiredAccuracy: 10,
-	              		stationaryRadius: 20,
-	              		distanceFilter: 30,
-	              		interval: 60000
-	              	});
+	              	
 
 	              	var valor=cordova.plugins.backgroundMode.isActive();
 	              	if(valor){
+	              		var callbackFn = function(location) {
+
+	              			alert("hola "+location.latitude+" "+location.longitude);
+
+	              			backgroundGeolocation.finish();
+	              		};
+
+	              		var failureFn = function(error) {
+	              			alert('BackgroundGeolocation error');
+	              		};
+
+	              		backgroundGeolocation.configure(callbackFn, failureFn, {
+	              			desiredAccuracy: 10,
+	              			stationaryRadius: 20,
+	              			distanceFilter: 30,
+	              			interval: 60000
+	              		});
 	              		backgroundGeolocation.start();
 	              	}else{
 	              		backgroundGeolocation.stop(); 
