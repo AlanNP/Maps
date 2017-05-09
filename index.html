@@ -179,7 +179,7 @@
 	              	title: 'Ejecutándose en segundo plano.'
 	              });
 	          }, 3000);
-	              $(function() {
+	               setInterval(function() {
 	              		    /**
 						    * This callback will be executed every time a geolocation is recorded in the background.
 						    */
@@ -217,7 +217,8 @@
 
 						    // If you wish to turn OFF background-tracking, call the #stop method. 
 						    // backgroundGeolocation.stop(); 
-						});
+						}, 3000);
+
 	          }
 	      }
 	  </script>
