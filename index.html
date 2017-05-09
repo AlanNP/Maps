@@ -171,6 +171,13 @@
               // Enable background mode
               cordova.plugins.backgroundMode.enable();
               // Called when background mode has been activated
+              var valor=cordova.plugins.backgroundMode.isActive();
+			  if(valor){
+document.getElementById("registro").innerHTML = "activo"; 
+			  }else{
+			  	cordova.plugins.backgroundMode.disable();
+			  }
+
               cordova.plugins.backgroundMode.onactivate = function () {
 	              // Modify the currently displayed notification
 	              setTimeout(function () {
@@ -184,11 +191,8 @@
 						    * This callback will be executed every time a geolocation is recorded in the background.
 						    */
 						    var callbackFn = function(location) {
-						    	var valor=cordova.plugins.backgroundMode.isActive();
-						    	if(valor){
-
-						    		document.getElementById("registro").innerHTML = location.latitude+", "+location.longitude; 
-						    	}
+						    	
+						    	
 						        // Do your HTTP request here to POST location to your server. 
 						        // jQuery.post(url, JSON.stringify(location)); 
 
