@@ -44,31 +44,42 @@
 	<script type="text/javascript" src="js/vendor/jquery.mobile-1.4.5.min.js"></script>
 
 	<script>
+
 		$(function (){
-            var t=localStorage.length;
-			if (t>0)  {
-				top.location='ruta.html'
-			}else{
-			ID_USUARIO=sessionStorage.getItem('ID_USUARIO')||0;
-			ID_RUTA=sessionStorage.getItem('ID_RUTA')||0;
-			var VER_REGID=sessionStorage.getItem('REGID')||0;
-			//$("#ID_REGID").html("<i class='fa fa-mobile-phone'></i>ID: "+VER_REGID.substr(VER_REGID.length - 7));
+
+			ID_USUARIO=sessionStorage.getItem('ID_USUARIO')||localStorage.getItem('ID_USUARIO');
+			ID_RUTA=sessionStorage.getItem('ID_RUTA')||localStorage.getItem('ID_RUTA');
+			var VER_REGID=sessionStorage.getItem('REGID')||localStorage.getItem('REGID');
+			$("#ID_REGID").html("<i class='fa fa-mobile-phone'></i>ID: "+VER_REGID.substr(VER_REGID.length - 7));
+
 			sessionStorage.setItem("ID_USUARIO",0);
-				setTimeout(function () {
-					top.location="login.html"
-				}, 3000);
+			
+			setTimeout(function () {
+				top.location="index.html"
+			}, 3000);
+			if (localStorage)  {
+				localStorage.removeItem("ID_USUARIO");
+				localStorage.removeItem("NOMBRE_USUARIO");
+				localStorage.removeItem("APELLIDO_PATERNO_USUARIO");
+				localStorage.removeItem("REGID");
+				localStorage.removeItem("ID_RUTA");
+				localStorage.removeItem("USUARIO_INTRANET");
+				localStorage.removeItem("PASSWORD_USUARIO");
+				localStorage.removeItem("ID_PARADA");
 			}
+			var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+			db.transaction(function(tx){
+				tx.executeSql('DELETE FROM PARADA');
+				tx.executeSql('DELETE FROM REGISTRAR_UBICACIONES'); 
+				tx.executeSql('DELETE FROM PARADA_T'); 
+			});
+
 		});
+
 		$(window).load(function() {
 			$('#preloader').fadeOut('slow');
 		});
-		
-		$(document).bind('mobileinit',function(){
-			$.mobile.changePage.defaults.changeHash = false;
-			$.mobile.hashListeningEnabled = false;
-			$.mobile.pushStateEnabled = false;
-		});
-		
+
 	</script>
 
 </body>

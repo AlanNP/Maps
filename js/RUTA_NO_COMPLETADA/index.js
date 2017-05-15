@@ -37,16 +37,52 @@ function ComentarioNoFinal(){
 		}, 2000);
 		return false;
 	}
+	var g= new Date();	
+	var hora=g.getHours();
+	var minuto=g.getMinutes();
+	var dia=g.getDate();
+	var mes=g.getMonth()+1;
+	if (g.getHours()<10) {
+		hora="0"+hora;
+	}
+	if(g.getMinutes()<10){
+		minuto="0"+minuto;
+	}
+	if(g.getDate()<10){
+		dia="0"+dia;
+	}
+	if(g.getMonth()<10){
+		mes="0"+mes;
+	}
 	
 	$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").removeAttr("href","");
 	$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").html("Guardando <img src='img/ajax-loader-cancelar.gif'>")
-
+	var horaf=g.getFullYear()+"-"+mes+"-"+dia+" "+hora+":"+minuto;
+	var db = window.openDatabase("RUTA", "1.0", "DATABASE", -1);
+	db.transaction(function(tx){
+		tx.executeSql('SELECT * FROM PARADA_T WHERE ID_PARADA= '+ID_PARADA, [], function(tx, results) {
+			val=results.rows.length;
+			for (var i = 0; i < val; i++){
+				var obj=String(results.rows.item(i).HORARIO_INICIO);
+				var tiempo=restarHoras(obj,horaf);
+				if(REPROGRAMAR_PARADA==0){
+					db.transaction(function(tx){
+						tx.executeSql('UPDATE PARADA_T SET TIEMPO="'+tiempo+'",ESTATUS_PARADA="Cancelada",HORARIO_FIN ="'+horaf+'",COMENTARIO_FINAL="'+COMENTARIO_FINAL+'" WHERE ID_PARADA='+ID_PARADA);
+					});
+				}else{
+					db.transaction(function(tx){
+						tx.executeSql('UPDATE PARADA_T SET TIEMPO="'+tiempo+'",ESTATUS_PARADA="Reprogramada",HORARIO_FIN ="'+horaf+'",COMENTARIO_FINAL="'+COMENTARIO_FINAL+'" WHERE ID_PARADA='+ID_PARADA);
+					});	
+				}
+			}
+		},null);	
+	});	
 	var positionTimer = navigator.geolocation.getCurrentPosition(
 		function (pos) {
 			$.ajax({	
 				url:'http://recorridos.vallen.mx/sis/RutaNoCompletada/index.asp',
-				data:{ID_USUARIO:3095,COMENTARIO_FINAL:COMENTARIO_FINAL,
-					ID_PARADA:12516,ID_CANCELACION:ID_CANCELACION,
+				data:{ID_USUARIO:ID_USUARIO,COMENTARIO_FINAL:COMENTARIO_FINAL,
+					ID_PARADA:ID_PARADA,ID_CANCELACION:ID_CANCELACION,
 					REPROGRAMAR:REPROGRAMAR_PARADA,FECHA_REPROGRAMAR:FECHA_REPROGRAMAR,
 					HORA_REPROGRAMAR:HORA_REPROGRAMAR,LATITUD_FIN:pos.coords.latitude,
 					LONGITUD_FIN:pos.coords.longitude},
@@ -61,10 +97,11 @@ function ComentarioNoFinal(){
 							sessionStorage.setItem("ID_PARADA",N_ID_PARADA);
 							
 							if(ESTADO_CONSULTA=='OK'){
-								alert("No completado");
-								location.reload();
-								$('#startroute').css('display','block');
-								$('#mensajesComplete').css('display','none');
+								
+								db.transaction(function(tx){
+									tx.executeSql('DELETE FROM PARADA WHERE ID_PARADA='+ID_PARADA);
+								});
+								window.location="resumen.html"
 							}else{
 								alert("Datos no validos.")
 							}
@@ -74,6 +111,8 @@ function ComentarioNoFinal(){
 						$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").attr("href","javascript:ComentarioNoFinal();");
 						
 						$("#btn_COMENTARIO_NO_COMPLETADA_FINAL").html("Guardando <img src='img/ajax-loader.gif'>")
+						alert('No se ha podido conectar con el servidor.Datos almacenados en el dispositivo.');
+						nocompleta();
 
 					}
 				});
