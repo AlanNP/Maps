@@ -1,42 +1,37 @@
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady(){
-    var push = PushNotification.init({
-        android: {
-            senderID: "1012969710793"
-        },
-        browser: {
-            pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-        },
-        ios: {
-            alert: "true",
-            badge: "true",
-            sound: "true"
-        }
-    });
+           // Android customization
+              cordova.plugins.backgroundMode.setDefaults({ text:'Realizando tareas.'});
+              // Enable background mode
+              cordova.plugins.backgroundMode.enable();
+              // Called when background mode has been activated
 
-    push.on('registration', function(data) {
-        var REGID=data.registrationId;
-            sessionStorage.setItem("REGID",REGID);
-            $("#btn_session").removeClass('ui-disabled');
-            $("#btn_session").html('Iniciar Sesión');
-    });
 
-    push.on('notification', function(data) {
-        navigator.notification.alert(
-            data.message,         // message
-            null,                 // callback
-            data.title,           // title
-            'Ok'                  // buttonName
-        );
-        push.finish(function() {
-        // Do something
-        });
-    });
+              cordova.plugins.backgroundMode.onactivate = function () {
+                  // Modify the currently displayed notification
+                  setTimeout(function () {
+                  // Modify the currently displayed notification
+                  cordova.plugins.backgroundMode.configure({
+                    title: 'Ejecutándose en segundo plano.'
+                  });
+                }, 3000);               
 
-    push.on('error', function(e) {
-        if (e.code != 7) {
-            modal_errores(e.message);
-        }
-    });
+                  var callbackFn = function(location) {
+
+                    backgroundGeolocation.finish();
+                  };
+                  var failureFn = function(error) {
+                    alert('BackgroundGeolocation error');
+                  };
+                  backgroundGeolocation.configure(callbackFn, failureFn, {
+                    desiredAccuracy: 10,
+                    stationaryRadius: 20,
+                    distanceFilter: 30,
+                    interval: 60000
+                  });
+                  backgroundGeolocation.start();
+
+                  
+                }
 }
